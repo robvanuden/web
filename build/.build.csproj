@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net46</TargetFramework>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <RootNamespace></RootNamespace>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>DEBUG;NET46</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>RELEASE;NET46</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Build" Version="15.1.1012" />
+    <PackageReference Include="Microsoft.Build.Framework" Version="15.1.1012" />
+    <PackageReference Include="Microsoft.Build.Tasks.Core" Version="15.1.1012" />
+    <PackageReference Include="Microsoft.CodeAnalysis" Version="2.2.0" />
+    <PackageReference Include="Nuke.Common" Version="*" />
+    <PackageReference Include="Nuke.Git" Version="*" />
+    <PackageReference Include="msdn.4.5.2" Version="0.1.0-alpha-1611021200" />
+    <PackageReference Include="docfx.console" Version="2.17.5">
+      <ExcludeAssets>build</ExcludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+</Project>
