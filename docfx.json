@@ -38,7 +38,7 @@
     "overwrite": [
       {
         "src": "repos",
-        "files": [ "*/*/specs/*.md" ]
+        "files": [ "*.disclaimer.md", "*/*/specs/*.md" ]
       }
     ],
 

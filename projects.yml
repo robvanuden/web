@@ -1,0 +1,3 @@
+- repositoryUrl: https://github.com/nuke-build/nuke
+- repositoryUrl: https://github.com/nuke-build/git
+  packageId: Nuke.Git

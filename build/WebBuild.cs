@@ -16,6 +16,7 @@ using Nuke.Core;
 using Nuke.Core.Tooling;
 using Nuke.Core.Utilities.Collections;
 using static CustomToc;
+using static Disclaimer;
 using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.IO.FtpTasks;
 using static Nuke.Common.IO.YamlTasks;
@@ -37,6 +38,9 @@ class WebBuild : Build
     string ApiDirectory => Path.Combine(SourceDirectory, "api");
     string SiteDirectory => Path.Combine(OutputDirectory, "site");
 
+    IEnumerable<ApiProject> Projects
+        => YamlDeserializeFromFile<List<ApiProject>>(Path.Combine(RootDirectory, "projects.yml"));
+
     Target Clean => _ => _
             .Executes(
                 () => DeleteDirectory(RepositoriesDirectory),
@@ -45,8 +49,7 @@ class WebBuild : Build
 
     Target Clone => _ => _
             .DependsOn(Clean)
-            .Executes(() => YamlDeserializeFromFile<List<string>>(Path.Combine(RootDirectory, "repos.yml"))
-                    .Select(GitRepository.TryParse)
+            .Executes(() => Projects.Select(x => x.Repository)
                     .ForEachLazy(x => Info($"Cloning repository '{x.SvnUrl}'..."))
                     .ForEach(x => GitClone(x.CloneUrl, Path.Combine(RepositoriesDirectory, x.Identifier))));
 
@@ -64,6 +67,15 @@ class WebBuild : Build
             .DependsOn(Restore)
             .Executes(() => WriteCustomToc(Path.Combine(ApiDirectory, "toc.yml"), GlobFiles(RepositoriesDirectory, "**/*.sln")));
 
+    Target Disclaimer => _ => _
+            .DependsOn(Restore)
+            .Executes(() => Projects
+                    .Where(x => !string.IsNullOrWhiteSpace(x.PackageId))
+                    .ForEachLazy(x => Info($"Writing disclaimer for {x.Repository.Identifier} ({x.PackageId})..."))
+                    .ForEach(x => WriteDisclaimer(x,
+                        Path.Combine(RepositoriesDirectory, $"{x.Repository.Owner}.{x.Repository.Name}.disclaimer.md"),
+                        GlobFiles(Path.Combine(RepositoriesDirectory, x.Repository.Owner, x.Repository.Name), "**/*.sln"))));
+
     Target Metadata => _ => _
             .DependsOn(Restore)
             .Executes(() => DocFxMetadata(DocFxFile, s => s.SetLogLevel(DocFxLogLevel.Verbose)));
@@ -73,7 +85,7 @@ class WebBuild : Build
                 .Concat(GlobFiles(RepositoriesDirectory, "specs/xrefmap.yml"));
 
     Target BuildSite => _ => _
-            .DependsOn(Metadata, CustomToc)
+            .DependsOn(Metadata, CustomToc, Disclaimer)
             .Executes(() => DocFxBuild(DocFxFile, s => s
                     .SetLogLevel(DocFxLogLevel.Verbose)
                     // TODO: use AddXRefMapFiles
