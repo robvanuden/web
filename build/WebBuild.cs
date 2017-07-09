@@ -88,6 +88,7 @@ class WebBuild : Build
             .DependsOn(Metadata, CustomToc, Disclaimer)
             .Executes(() => DocFxBuild(DocFxFile, s => s
                     .SetLogLevel(DocFxLogLevel.Verbose)
+                    // TODO: SetServe(IsLocalBuild)
                     // TODO: use AddXRefMapFiles
                     .SetArgumentConfigurator(x => x.Add("--xref {value}", XRefMapFiles, mainSeparator: ","))));
 
