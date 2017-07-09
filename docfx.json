@@ -26,7 +26,7 @@
     "content": [
       {
         "src": "source",
-        "files": [ "**/*" ]
+        "files": [ "**/*.md", "**/*.yml" ]
       }
     ],
     "resource": [
@@ -42,7 +42,7 @@
       }
     ],
 
-    "template": ["source/template"],
+    "template": [ "source/template" ],
     "dest": "output/site",
 
     "globalMetadata": {
