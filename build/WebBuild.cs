@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using Nuke.Common;
@@ -33,21 +32,20 @@ class WebBuild : Build
 {
     public static int Main () => Execute<WebBuild>(x => x.BuildSite);
 
-    string DocFxJsonFile => Path.Combine(RootDirectory, "docfx.json");
-
+    string DocFxFile => Path.Combine(RootDirectory, "docfx.json");
     string RepositoriesDirectory => Path.Combine(RootDirectory, "repos");
-    string ApiDirectory => Path.Combine(RootDirectory, "api");
-    string SiteDirectory => Path.Combine(RootDirectory, "_site");
+    string ApiDirectory => Path.Combine(SourceDirectory, "api");
+    string SiteDirectory => Path.Combine (RootDirectory, "site");
 
     Target Clean => _ => _
             .Executes(
-                () => DeleteDirectory(SiteDirectory),
                 () => DeleteDirectory(RepositoriesDirectory),
-                () => PrepareCleanDirectory(ApiDirectory));
+                () => DeleteDirectory(ApiDirectory),
+                () => PrepareCleanDirectory(OutputDirectory));
 
     Target Clone => _ => _
             .DependsOn(Clean)
-            .Executes(() => YamlDeserialize<List<string>>(Path.Combine(RootDirectory, "repos.yml"))
+            .Executes(() => YamlDeserializeFromFile<List<string>>(Path.Combine(RootDirectory, "repos.yml"))
                     .Select(GitRepository.TryParse)
                     .ForEachLazy(x => Info($"Cloning repository '{x.SvnUrl}'..."))
                     .ForEach(x => GitClone(x.CloneUrl, Path.Combine(RepositoriesDirectory, x.Identifier))));
@@ -64,22 +62,22 @@ class WebBuild : Build
 
     Target CustomToc => _ => _
             .DependsOn(Restore)
-            .Executes(() => WriteCustomToc(Path.Combine(ApiDirectory, "toc.yml"),
-                GlobFiles(RepositoriesDirectory, "**/*.sln")));
+            .Executes(() => WriteCustomToc(Path.Combine(ApiDirectory, "toc.yml"), GlobFiles(RepositoriesDirectory, "**/*.sln")));
 
     Target Metadata => _ => _
             .DependsOn(Restore)
-            .Executes(() => DocFxMetadata(DocFxJsonFile, s => s.SetLogLevel(DocFxLogLevel.Verbose)));
+            .Executes(() => DocFxMetadata(DocFxFile, s => s.SetLogLevel(DocFxLogLevel.Verbose)));
 
-    IEnumerable<string> XrefMapFiles
+    IEnumerable<string> XRefMapFiles
         => GlobFiles(NuGetPackageResolver.GetLocalInstalledPackageDirectory("msdn.4.5.2"), "content/*.zip")
                 .Concat(GlobFiles(RepositoriesDirectory, "specs/xrefmap.yml"));
 
     Target BuildSite => _ => _
             .DependsOn(Metadata, CustomToc)
-            .Executes(() => DocFxBuild(DocFxJsonFile, s => s
+            .Executes(() => DocFxBuild(DocFxFile, s => s
                     .SetLogLevel(DocFxLogLevel.Verbose)
-                    .SetArgumentConfigurator(x => x.Add("--xref {value} --serve", XrefMapFiles, mainSeparator: ","))));
+                    // TODO: use AddXRefMapFiles
+                    .SetArgumentConfigurator(x => x.Add("--xref {value} --serve", XRefMapFiles, mainSeparator: ","))));
 
     Target Publish => _ => _
             .DependsOn(BuildSite)

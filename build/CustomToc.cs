@@ -73,7 +73,7 @@ static class CustomToc
                     .WriteBlock(Kind.Entry, relevantTypeSymbols, iconClasses)
                     .WriteBlock(Kind.Servers, relevantTypeSymbols, iconClasses)
                     .WriteBlock(Kind.Common, relevantTypeSymbols, iconClasses)
-                    .WriteBlock(Kind.Addins, relevantTypeSymbols, iconClasses)
+                    .WriteBlock(Kind.ThirdParty, relevantTypeSymbols, iconClasses)
                     .ToString());
     }
 
@@ -83,7 +83,7 @@ static class CustomToc
         Entry,
         Servers,
         Common,
-        Addins
+        ThirdParty
     }
 
     static Kind GetKind (ITypeSymbol typeSymbol)
@@ -95,7 +95,7 @@ static class CustomToc
         if (typeSymbol.Name.EndsWith("Tasks"))
             return IsCommonType(typeSymbol)
                 ? Kind.Common
-                : Kind.Addins;
+                : Kind.ThirdParty;
 
         return Kind.None;
     }
@@ -107,7 +107,7 @@ static class CustomToc
         ILookup<Kind, INamedTypeSymbol> typeSymbols,
         IDictionary<string, string> iconClasses)
         => builder
-                .AppendLine($"- separator: {kind}")
+                .AppendLine($"- separator: {(kind == Kind.ThirdParty ? "Third Party" : kind.ToString())}")
                 .ForEach(typeSymbols[kind].OrderBy(x => x.Name), x => builder.WriteType(x, iconClasses));
 
     static StringBuilder ForEach<T> (
