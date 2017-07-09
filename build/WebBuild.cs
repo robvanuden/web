@@ -89,7 +89,7 @@ class WebBuild : Build
             .Executes(() => DocFxBuild(DocFxFile, s => s
                     .SetLogLevel(DocFxLogLevel.Verbose)
                     // TODO: use AddXRefMapFiles
-                    .SetArgumentConfigurator(x => x.Add("--xref {value} --serve", XRefMapFiles, mainSeparator: ","))));
+                    .SetArgumentConfigurator(x => x.Add("--xref {value}", XRefMapFiles, mainSeparator: ","))));
 
     Target Publish => _ => _
             .DependsOn(BuildSite)
