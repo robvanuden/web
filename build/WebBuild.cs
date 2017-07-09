@@ -94,6 +94,6 @@ class WebBuild : Build
     Target Publish => _ => _
             .DependsOn(BuildSite)
             .Executes(
-                () => FtpCredentials = new NetworkCredential(EnsureVariable("FTP_USERNAME"), EnsureVariable("FTP_PASSWORD")),
+                () => FtpCredentials = new NetworkCredential(EnsureArgument("FTP_USERNAME"), EnsureArgument("FTP_PASSWORD")),
                 () => FtpUploadDirectoryRecursively(SiteDirectory, "ftp://www58.world4you.com"));
 }
