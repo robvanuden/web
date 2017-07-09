@@ -26,7 +26,7 @@
     "content": [
       {
         "src": "source",
-        "files": [ "**/*.md", "**/*.yml" ]
+        "files": [ "**/*" ]
       }
     ],
     "resource": [
@@ -50,6 +50,7 @@
       "_enableSearch": true,
       "_disableBreadcrumb": true
     },
+
 
     "noLangKeyword": false
   }
