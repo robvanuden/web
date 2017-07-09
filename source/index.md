@@ -12,8 +12,8 @@ uid: index
 <div class="jumbotron">
   <div class="container">
     <div class="row">
-        <h1>We &hearts; builds.</h1>
-        <p class="lead">Nuke is a cross-platform build automation system that finally escapes from the conventional scripting environment most developers are still used to utilize. Let's start fresh with our build <strike>scripts</strike>, and write some clean and <u>pure</u> C#!</p>
+        <h1>Just build it.</h1>
+        <p class="lead">Nuke is a cross-platform build automation system that managed to escape from the often cumbersome scripting environment. Let's start over with our build <strike>scripts</strike>, and write some <u>idiomatic</u> C#!</p>
         <p class="lead"><a class="btn btn-primary btn-lg" href="/getting-started.html" role="button">Read more</a><a class="btn btn-primary btn-lg" href="https://vimeo.com/221165782" role="button">Watch more</a></p>
       </div>
   </div>
