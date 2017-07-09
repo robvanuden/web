@@ -68,18 +68,18 @@ class WebBuild : Build
                 GlobFiles(RepositoriesDirectory, "**/*.sln")));
 
     Target Metadata => _ => _
-            .DependsOn(Clone)
+            .DependsOn(Restore)
             .Executes(() => DocFxMetadata(DocFxJsonFile, s => s.SetLogLevel(DocFxLogLevel.Verbose)));
+
+    IEnumerable<string> XrefMapFiles
+        => GlobFiles(NuGetPackageResolver.GetLocalInstalledPackageDirectory("msdn.4.5.2"), "content/*.zip")
+                .Concat(GlobFiles(RepositoriesDirectory, "specs/xrefmap.yml"));
 
     Target BuildSite => _ => _
             .DependsOn(Metadata, CustomToc)
-            .Executes(() =>
-            {
-                var xrefFiles = GlobFiles(NuGetPackageResolver.GetLocalInstalledPackageDirectory("msdn.4.5.2"), "**/*.zip");
-                DocFxBuild(DocFxJsonFile, s => s
-                            .SetLogLevel(DocFxLogLevel.Verbose)
-                            .SetArgumentConfigurator(x => x.Add("--xref {value}", xrefFiles, mainSeparator: ",")));
-            });
+            .Executes(() => DocFxBuild(DocFxJsonFile, s => s
+                    .SetLogLevel(DocFxLogLevel.Verbose)
+                    .SetArgumentConfigurator(x => x.Add("--xref {value} --serve", XrefMapFiles, mainSeparator: ","))));
 
     Target Publish => _ => _
             .DependsOn(BuildSite)
