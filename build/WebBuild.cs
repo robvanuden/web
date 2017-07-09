@@ -35,7 +35,7 @@ class WebBuild : Build
     string DocFxFile => Path.Combine(RootDirectory, "docfx.json");
     string RepositoriesDirectory => Path.Combine(RootDirectory, "repos");
     string ApiDirectory => Path.Combine(SourceDirectory, "api");
-    string SiteDirectory => Path.Combine (RootDirectory, "site");
+    string SiteDirectory => Path.Combine(OutputDirectory, "site");
 
     Target Clean => _ => _
             .Executes(
