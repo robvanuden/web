@@ -156,7 +156,8 @@ For more information check the [documentation section](/api/Nuke.Core.Build.html
 
 Concluding, a few projects using Nuke:
 
-- [NukeBuild](https://github.com/nuke-build/nuke/tree/master/build)
+- [nuke-build/nuke](https://github.com/nuke-build/nuke/tree/master/build)
+- [nuke-build/web](https://github.com/nuke-build/web/tree/master/build)
 - &lt;your project&gt; :smile:
 
 <br/>
