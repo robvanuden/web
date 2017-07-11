@@ -12,10 +12,11 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.MSBuild;
 using Nuke.Common;
-using Nuke.Common.IO;
+using Nuke.Common.Tools.MSBuild;
 using Nuke.Core;
 using Nuke.Core.BuildServers;
 using Nuke.Core.Execution;
+using Nuke.Core.IO;
 using Nuke.Core.Tooling;
 using Nuke.Core.Utilities.Collections;
 using static Nuke.Core.Logger;
@@ -138,7 +139,9 @@ static class CustomToc
                    typeof(EnvironmentInfo),
                    typeof(ProcessTasks),
                    typeof(Logger),
-                   typeof(DefaultSettings)
+                   typeof(DefaultSettings),
+                   typeof(FileSystemTasks),
+                   typeof(PathConstruction)
                }.Any(x => typeSymbol.ToDisplayString().Equals(x.FullName));
     }
 
@@ -149,7 +152,7 @@ static class CustomToc
         => typeSymbol.GetAttributes().Any(x => x.AttributeClass.ToDisplayString().Equals(typeof(BuildServerAttribute).FullName));
 
     static bool IsCommonType (ITypeSymbol typeSymbol)
-        => typeSymbol.ContainingAssembly.Name == typeof(FileSystemTasks).Assembly.GetName().Name;
+        => typeSymbol.ContainingAssembly.Name == typeof(MSBuildTasks).Assembly.GetName().Name;
 
     static string GetName (this ITypeSymbol typeSymbol)
         => typeSymbol.Name.EndsWith("Tasks")

@@ -18,41 +18,45 @@ using Nuke.Core.Tooling;
 using Nuke.Core.Utilities.Collections;
 using static CustomToc;
 using static Disclaimer;
-using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.IO.FtpTasks;
 using static Nuke.Common.IO.YamlTasks;
 using static Nuke.Common.Tools.DocFx.DocFxTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 using static Nuke.Common.Tools.MSBuild.MSBuildTasks;
 using static Nuke.Common.Tools.NuGet.NuGetTasks;
+using static Nuke.Core.IO.FileSystemTasks;
 using static Nuke.Core.ControlFlow;
 using static Nuke.Core.EnvironmentInfo;
+using static Nuke.Core.IO.PathConstruction;
 using static Nuke.Core.Logger;
 using static Nuke.Git.GitTasks;
 
 class WebBuild : Build
 {
+    [Parameter] readonly string FtpUsername;
+    [Parameter] readonly string FtpPassword;
+
     public static int Main () => Execute<WebBuild>(x => x.BuildSite);
 
-    string DocFxFile => (NPath) RootDirectory / "docfx.json";
-    string RepositoriesDirectory => (NPath) RootDirectory / "repos";
-    string ApiDirectory => (NPath) SourceDirectory / "api";
-    string SiteDirectory => (NPath) OutputDirectory / "site";
+    string DocFxFile => (AbsPath) RootDirectory / "docfx.json";
+    string RepositoriesDirectory => (AbsPath) RootDirectory / "repos";
+    string ApiDirectory => (AbsPath) SourceDirectory / "api";
+    string SiteDirectory => (AbsPath) OutputDirectory / "site";
 
     IEnumerable<ApiProject> Projects
-        => YamlDeserializeFromFile<List<ApiProject>>((NPath) RootDirectory / "projects.yml");
+        => YamlDeserializeFromFile<List<ApiProject>>((AbsPath) RootDirectory / "projects.yml");
 
     Target Clean => _ => _
             .Executes(
                 () => DeleteDirectory(RepositoriesDirectory),
                 () => DeleteDirectory(ApiDirectory),
-                () => PrepareCleanDirectory(OutputDirectory));
+                () => EnsureCleanDirectory(OutputDirectory));
 
     Target Clone => _ => _
             .DependsOn(Clean)
             .Executes(() => Projects.Select(x => x.Repository)
                     .ForEachLazy(x => Info($"Cloning repository '{x.SvnUrl}'..."))
-                    .ForEach(x => GitClone(x.CloneUrl, (NPath) RepositoriesDirectory / x.Identifier)));
+                    .ForEach(x => GitClone(x.CloneUrl, (AbsPath) RepositoriesDirectory / x.Identifier)));
 
     Target Restore => _ => _
             .DependsOn(Clone)
@@ -66,7 +70,7 @@ class WebBuild : Build
 
     Target CustomToc => _ => _
             .DependsOn(Restore)
-            .Executes(() => WriteCustomToc((NPath) ApiDirectory / "toc.yml", GlobFiles(RepositoriesDirectory, "**/*.sln")));
+            .Executes(() => WriteCustomToc((AbsPath) ApiDirectory / "toc.yml", GlobFiles(RepositoriesDirectory, "**/*.sln")));
 
     Target Disclaimer => _ => _
             .DependsOn(Restore)
@@ -74,8 +78,8 @@ class WebBuild : Build
                     .Where(x => !string.IsNullOrWhiteSpace(x.PackageId))
                     .ForEachLazy(x => Info($"Writing disclaimer for {x.Repository.Identifier} ({x.PackageId})..."))
                     .ForEach(x => WriteDisclaimer(x,
-                        (NPath) RepositoriesDirectory / $"{x.Repository.Owner}.{x.Repository.Name}.disclaimer.md",
-                        GlobFiles((NPath) RepositoriesDirectory / x.Repository.Owner / x.Repository.Name, "**/*.sln"))));
+                        (AbsPath) RepositoriesDirectory / $"{x.Repository.Owner}.{x.Repository.Name}.disclaimer.md",
+                        GlobFiles((AbsPath) RepositoriesDirectory / x.Repository.Owner / x.Repository.Name, "**/*.sln"))));
 
     Target Metadata => _ => _
             .DependsOn(Restore)
@@ -87,17 +91,16 @@ class WebBuild : Build
 
     Target BuildSite => _ => _
             .DependsOn(Metadata, CustomToc, Disclaimer)
-            .Executes(() => DocFxBuild(DocFxFile, s => s
-                    .SetLogLevel(DocFxLogLevel.Verbose)
-                    // TODO: SetServe(IsLocalBuild)
-                    // TODO: use AddXRefMapFiles
-                    .SetArgumentConfigurator(x => x.Add("--xref {value}", XRefMapFiles, mainSeparator: ","))));
+            .Executes(() => DocFxBuild(DocFxFile,
+                s => s
+                        .SetLogLevel(DocFxLogLevel.Verbose)
+                        // TODO: SetServe(IsLocalBuild)
+                        // TODO: use AddXRefMapFiles
+                        .SetArgumentConfigurator(x => x.Add("--xref {value}", XRefMapFiles, ","))));
 
     Target Publish => _ => _
             .DependsOn(BuildSite)
             .Executes(
-                () => FtpCredentials = new NetworkCredential(
-                    EnsureArgumentOrVariable("FTP_USERNAME"),
-                    EnsureArgumentOrVariable("FTP_PASSWORD")),
+                () => FtpCredentials = new NetworkCredential(FtpUsername, FtpPassword),
                 () => FtpUploadDirectoryRecursively(SiteDirectory, "ftp://www58.world4you.com"));
 }
