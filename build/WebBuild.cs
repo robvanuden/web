@@ -8,13 +8,10 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using Nuke.Common;
-using Nuke.Common.Git;
-using Nuke.Common.IO;
 using Nuke.Common.Tools;
 using Nuke.Common.Tools.DocFx;
 using Nuke.Common.Tools.MSBuild;
 using Nuke.Core;
-using Nuke.Core.Tooling;
 using Nuke.Core.Utilities.Collections;
 using static CustomToc;
 using static Disclaimer;
@@ -37,13 +34,14 @@ class WebBuild : Build
 
     public static int Main () => Execute<WebBuild>(x => x.BuildSite);
 
-    string DocFxFile => (Absolute) RootDirectory / "docfx.json";
-    string RepositoriesDirectory => (Absolute) RootDirectory / "repos";
-    string ApiDirectory => (Absolute) SourceDirectory / "api";
-    string SiteDirectory => (Absolute) OutputDirectory / "site";
+    string DocFxFile => RootDirectory / "docfx.json";
+    string SiteDirectory => OutputDirectory / "site";
+
+    AbsolutePath RepositoriesDirectory => RootDirectory / "repos";
+    AbsolutePath ApiDirectory => SourceDirectory / "api";
 
     IEnumerable<ApiProject> Projects
-        => YamlDeserializeFromFile<List<ApiProject>>((Absolute) RootDirectory / "projects.yml");
+        => YamlDeserializeFromFile<List<ApiProject>>(RootDirectory / "projects.yml");
 
     Target Clean => _ => _
             .Executes(
@@ -55,7 +53,7 @@ class WebBuild : Build
             .DependsOn(Clean)
             .Executes(() => Projects.Select(x => x.Repository)
                     .ForEachLazy(x => Info($"Cloning repository '{x.SvnUrl}'..."))
-                    .ForEach(x => GitClone(x.CloneUrl, (Absolute) RepositoriesDirectory / x.Identifier)));
+                    .ForEach(x => GitClone(x.CloneUrl, RepositoriesDirectory / x.Identifier)));
 
     Target Restore => _ => _
             .DependsOn(Clone)
@@ -69,7 +67,7 @@ class WebBuild : Build
 
     Target CustomToc => _ => _
             .DependsOn(Restore)
-            .Executes(() => WriteCustomToc((Absolute) ApiDirectory / "toc.yml", GlobFiles(RepositoriesDirectory, "**/*.sln")));
+            .Executes(() => WriteCustomToc(ApiDirectory / "toc.yml", GlobFiles(RepositoriesDirectory, "**/*.sln")));
 
     Target Disclaimer => _ => _
             .DependsOn(Restore)
@@ -77,8 +75,8 @@ class WebBuild : Build
                     .Where(x => !string.IsNullOrWhiteSpace(x.PackageId))
                     .ForEachLazy(x => Info($"Writing disclaimer for {x.Repository.Identifier} ({x.PackageId})..."))
                     .ForEach(x => WriteDisclaimer(x,
-                        (Absolute) RepositoriesDirectory / $"{x.Repository.Owner}.{x.Repository.Name}.disclaimer.md",
-                        GlobFiles((Absolute) RepositoriesDirectory / x.Repository.Owner / x.Repository.Name, "**/*.sln"))));
+                        RepositoriesDirectory / $"{x.Repository.Owner}.{x.Repository.Name}.disclaimer.md",
+                        GlobFiles(RepositoriesDirectory / x.Repository.Owner / x.Repository.Name, "**/*.sln"))));
 
     Target Metadata => _ => _
             .DependsOn(Restore)
