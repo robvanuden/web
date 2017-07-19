@@ -117,7 +117,8 @@ title: Home
           <li><a href="https://vimeo.com/221086461">Generating CLI tool support</a> with thousands of lines of boiler-plate code.</li>
         </ol>
         <p>
-        <a class="btn btn-primary btn-lg" href="/getting-started.html" role="button">Getting Started</a>
+        <a class="btn btn-default btn-md" href="/getting-started.html" role="button">Read more</a>
+        <a class="btn btn-default btn-md" href="https://vimeo.com/221165782" role="button">Watch more</a>
       </div>
   </div>
 </div>
