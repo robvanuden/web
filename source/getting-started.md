@@ -4,6 +4,7 @@ jr.disableMetadata: true
 jr.disableLeftMenu: true
 jr.disableRightMenu: true
 uid: getting-started
+title: Getting Started
 ---
 
 # Getting Started

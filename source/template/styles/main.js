@@ -1,11 +1,20 @@
-// Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license. See LICENSE file in the project root for full license information.
+var $item1 = $('#ide-support-carousel .item'); 
+var $item2 = $('#default-settings-carousel .item'); 
+var $item3 = $('#adaptive-logging-carousel .item'); 
+$item1.eq(0).addClass('active');
+$item2.eq(0).addClass('active');
+$item3.eq(0).addClass('active');
 
-var jumboHeight = $('.jumbotron').outerHeight();
-function parallax(){
-    var scrolled = $(window).scrollTop();
-    $('.bg').css('height', (jumboHeight-scrolled) + 'px');
-}
 
-$(window).scroll(function(e){
-    parallax();
+$('#auto-completion').on('click', function() {
+  $('#ide-support-carousel').carousel(0)
 });
+$('#navigation').on('click', function() {
+  $('#ide-support-carousel').carousel(1)
+});
+$('#debugging').on('click', function() {
+  $('#ide-support-carousel').carousel(2)
+});
+$('#ide-support-carousel').carousel({
+  interval: 3000
+})

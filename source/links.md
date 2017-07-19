@@ -4,6 +4,7 @@ jr.disableMetadata: true
 jr.disableLeftMenu: true
 jr.disableRightMenu: true
 uid: links
+title: Links
 ---
 
 # Prerequisites

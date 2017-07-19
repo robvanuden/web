@@ -42,7 +42,7 @@
       }
     ],
 
-    "template": [ "source/template" ],
+    "template": [ "statictoc", "source/template" ],
     "dest": "output/site",
 
     "globalMetadata": {
