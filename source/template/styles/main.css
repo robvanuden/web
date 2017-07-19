@@ -36,12 +36,22 @@ a:hover {
   padding-bottom:40px;
 }
 .feature-list [class*="col-"] {
-    background-clip: padding-box;
-    border: 8px solid transparent;
+  background-clip: padding-box;
+  border: 8px solid transparent;
 }
 @media only screen and (max-width: 768px) {
   .feature-list-img, .feature-list .carousel {
     margin:0px;
+  }
+  .feature-list [class*="col-"] {
+    border:0;
+  }
+  .feature h2 {
+    font-size:19pt;
+  }
+  .feature h2 .icon {
+    font-size:18pt;
+    margin-right:5px;
   }
 }
 
@@ -57,6 +67,11 @@ a:hover {
   margin:0;
   font-weight: bold;
   text-shadow: 0 1px 2px #777;
+}
+@media only screen and (max-width: 768px) {
+  #header {
+    margin-top: -20px;
+  }
 }
 
 
