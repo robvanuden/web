@@ -8,7 +8,12 @@
         <a href="#top">Back to top</a>
       </span>
       {{{_appFooter}}}
-      {{^_appFooter}}<span>Copyright © 2015-2017 Matthias Koch<br><a href="http://opensource.org/licenses/MIT">MIT License</a>{{/_appFooter}}
+      {{^_appFooter}}
+      <span>
+        Copyright © Matthias Koch<br>
+        <a href="http://opensource.org/licenses/MIT">MIT License</a>
+      </span>
+      {{/_appFooter}}
     </div>
   </div>
 </footer>
