@@ -4,16 +4,20 @@
   <div class="grad-bottom"></div>
   <div class="footer">
     <div class="container">
-      <span class="pull-right">
-        <a href="#top">Back to top</a>
-      </span>
-      {{{_appFooter}}}
-      {{^_appFooter}}
-      <span>
-        Copyright © Matthias Koch<br>
-        <a href="http://opensource.org/licenses/MIT">MIT License</a>
-      </span>
-      {{/_appFooter}}
+      <div class="row">
+        <div class="col-md-4">
+          <span>
+            Copyright © Matthias Koch<br>
+            <a href="http://opensource.org/licenses/MIT">MIT License</a>
+          </span>
+        </div>
+        <div class="col-md-4 text-center">
+          <a href="https://gitter.im/nuke-build/nuke">Gitter</a> | <a href="https://github.com/nuke-build/nuke">GitHub</a> | <a href="https://twitter.com/nukebuildnet">Twitter</a>
+        </div>
+        <div class="col-md-4 text-right">
+          <a href="#top">Back to top</a>
+        </div>
+      </div>
     </div>
   </div>
 </footer>
