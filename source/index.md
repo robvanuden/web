@@ -129,7 +129,7 @@ title: Home
   <div class="row">
     <div class="col-md-5">
       <h2><span class="icon icon-keyboard"></span> Full IDE support</h2>
-      <p>Builds are full-fledged C# projects; no magic involved! That means all the powerful IDE features like <a id="auto-completion">auto-completion</a>, refactorings and formatting can celebrate their comback. Targets are defined as expression-bodied properties and therefore provide <a id="navigation">superior navigation</a>. Also target dependency definitions and rename refactorings benefit from <em>targets as properties</em>. Ultimately, <a id="debugging">debugging</a> is available just as you know it. No more writing debug output to the console!</p>
+      <p>Builds are full-fledged C# projects. No magic involved! That means all the powerful IDE features like <a id="auto-completion">auto-completion</a>, refactorings and formatting will celebrate their comeback. Targets are defined as <em>expression-bodied properties</em> and therefore provide <a id="navigation">superior navigation</a>. Also target dependency definitions and rename refactorings benefit from this approach. Ultimately, <a id="debugging">debugging</a> is available just as you know it. No more writing debug output to the console!</p>
     </div>
     <div class="col-md-7">
       <div id="ide-support-carousel" class="carousel slide" data-ride="carousel1">
@@ -187,7 +187,7 @@ title: Home
   <div class="row">
     <div class="col-md-6 list-left">
       <h2><span class="icon icon-equalizer"></span> Default Settings</h2>
-      <p>Common metadata, like <em>solution file</em> or <em>repository url</em>, and best-practice settings, like <em>custom loggers</em> or <em>coverage filters</em>, are automatically loaded into <code>DefaultSettings</code> and can be used to invoke tools most efficiently.</p>
+      <p>Common metadata, like <em>solution file</em> or <em>repository url</em>, and best-practice settings, like <em>custom loggers</em> or <em>coverage filters</em>, are automatically loaded into <code>DefaultSettings</code> and can be used to invoke tools more efficiently.</p>
       <div id="default-settings-carousel" class="carousel slide" data-ride="carousel2">
         <ol class="carousel-indicators">
           <li data-target="#default-settings-carousel" data-slide-to="0" class="active"></li>
