@@ -158,9 +158,9 @@ title: Home
 
 
 <!-- BOOTSTRAPPING JUMBOTRON -->
-<div class="jumbotron feature">
+<div id="platforms" class="jumbotron feature">
   <div class="container">
-    <div id="platforms" class="row">
+    <div class="row">
       <h2>Bootstrapping for all platforms included.</h2>
       <span class="icon icon-windows8"></span>
       <span class="icon icon-tux"></span>
@@ -171,23 +171,23 @@ title: Home
 
 
 <!-- FEATURE LIST -->
-<div class="container feature feature-list">
+<div id="feature-list" class="container feature">
   <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-6 list-left">
       <h2><span class="icon icon-syringe2"></span> Parameter Injection</h2>
-      <p>Fields marked with <code>[Parameter]</code> will automatically receive values provided as command-line arguments or environment variables.</p>
-      <div class="feature-list-img"><img src="images/parameter-injection.png" alt="Parameter Injection" /></div>
+      <p>Fields marked with <code>[Parameter]</code> will be populated from command-line arguments and environment variables. They can also be set as requirements for targets, that will be validated prior to execution.</p>
+      <img src="images/parameter-injection.png" alt="Parameter Injection">
     </div>
-    <div class="col-md-6">
+    <div class="col-md-6 list-right">
       <h2><span class="icon icon-price-tag2"></span> Path Construction</h2>
-      <p>Paths can be constructed using the <code>/</code> or <code>+</code> operator, which will take care of creating valid Windows or Unix paths.</p>
-      <div class="feature-list-img"><img src="images/path-construction.png" alt="Path Construction" /></div>
+      <p>Absolute and relative paths can be constructed using the <code>/</code> or <code>+</code> operators, which will automatically adjust the directory separator to the underlying OS. If required, paths can also be casted to match other platforms.</p>
+      <div class="feature-list-img"><img src="images/path-construction.png" alt="Path Construction"></div>
     </div>
   </div>
   <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-6 list-left">
       <h2><span class="icon icon-equalizer"></span> Default Settings</h2>
-      <p>Common metadata and best-practice settings are automatically loaded into <code>DefaultSettings</code> and can be used to invoke tools.</p>
+      <p>Common metadata, like <em>solution file</em> or <em>repository url</em>, and best-practice settings, like <em>custom loggers</em> or <em>coverage filters</em>, are automatically loaded into <code>DefaultSettings</code> and can be used to invoke tools most efficiently.</p>
       <div id="default-settings-carousel" class="carousel slide" data-ride="carousel2">
         <ol class="carousel-indicators">
           <li data-target="#default-settings-carousel" data-slide-to="0" class="active"></li>
@@ -207,9 +207,9 @@ title: Home
         </a>
       </div>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-6 list-right">
       <h2><span class="icon icon-notebook"></span> Adaptive Logging</h2>
-      <p>Log output is optimized for best readability depending on the current environment. For instance, local vs. server build.</p>
+      <p>Log output is optimized for the best readability. Depending on the current environment the build is running on, target captions will be printed in various figlet fonts or utilize CI specific service messages.</p>
       <div id="adaptive-logging-carousel" class="carousel slide" data-ride="carousel3">
         <ol class="carousel-indicators">
           <li data-target="#adaptive-logging-carousel" data-slide-to="0" class="active"></li>

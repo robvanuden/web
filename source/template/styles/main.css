@@ -23,28 +23,28 @@ a:hover {
   font-size:20pt;
   margin-right: 15px;
 }
-.feature-list-img, .feature-list .carousel {
-  margin:20px;
-}
-.feature-list-img * {
+#feature-list img {
   height:auto;
   width:100%;
   display:block;
   box-shadow: 7px 7px 10px grey;
 }
-.feature-list > .row > div {
-  padding-bottom:40px;
+#feature-list > .row > div {
+  padding-bottom:100px;
 }
-.feature-list [class*="col-"] {
-  background-clip: padding-box;
-  border: 8px solid transparent;
+#feature-list .list-left {
+  padding-right:60px;
+}
+#feature-list .list-right {
+  padding-left:60px;
+}
+#feature-list p {
+  margin-bottom:20px;
 }
 @media only screen and (max-width: 768px) {
-  .feature-list-img, .feature-list .carousel {
-    margin:0px;
-  }
-  .feature-list [class*="col-"] {
-    border:0;
+  #feature-list .list-left, #feature-list .list-right {
+    padding-left:15px;
+    padding-right:15px;
   }
   .feature h2 {
     font-size:19pt;
@@ -97,24 +97,10 @@ a:hover {
 
 
 
-#platforms {
-  text-align:center;
-  padding:20px;
-}
-#platforms > .icon {
-  font-size:120px;
-  display:inline-block;
-  margin: 40px 40px 20px 40px;
-  text-shadow: 0 0 50px #fff;
-  color:#000;
-}
-
-
 
 
 .carousel {
   box-shadow: 7px 7px 10px grey;
-  margin: 20px;
 }
 .carousel-indicators {
   position: absolute;
@@ -163,6 +149,20 @@ a:hover {
     margin: 0px;
   }
 }
+
+
+#platforms .row {
+  text-align:center;
+  padding:20px;
+}
+#platforms .icon {
+  font-size:120px;
+  display:inline-block;
+  margin: 40px 40px 20px 40px;
+  text-shadow: 0 0 50px #fff;
+  color:#000;
+}
+
 
 
 
