@@ -112,9 +112,10 @@ title: Home
 </svg>
 -->
         <ol class="definition">
-          <li>Cross-platform <a href="https://martinfowler.com/articles/continuousIntegration.html#AutomateTheBuild">build automation</a> system with C# DSL.</li>
-          <li>Providing magic without actually doing magic.</li>
-          <li><a href="https://vimeo.com/221086461">Generating CLI tool support</a> with thousands of lines of boiler-plate code.</li>
+          <li>A cross-platform <a href="https://martinfowler.com/articles/continuousIntegration.html#AutomateTheBuild">build automation</a> system with C# DSL.</li>
+          <li>An approach where existing tools are embraced and integrated.</li>
+          <li>A state where every developer in a team is able to manage and change the build.</li>
+          <li>A way of utilizing <a href="https://vimeo.com/221086461">code generation</a> to quickly support CLI tools.</li>
         </ol>
         <p>
         <a class="btn btn-default btn-md" href="/getting-started.html" role="button">Read more</a>
