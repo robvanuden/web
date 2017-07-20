@@ -210,7 +210,7 @@ title: Home
     </div>
     <div class="col-md-6 list-right">
       <h2><span class="icon icon-notebook"></span> Adaptive Logging</h2>
-      <p>Log output is optimized for the best readability. Depending on the current environment the build is running on, target captions will be printed in various figlet fonts or utilize CI specific service messages.</p>
+      <p>Log output is optimized for the best readability. Depending on the current environment the build is running on, target captions will be printed in various figlet fonts or utilize service messages if supported by the CI system.</p>
       <div id="adaptive-logging-carousel" class="carousel slide" data-ride="carousel3">
         <ol class="carousel-indicators">
           <li data-target="#adaptive-logging-carousel" data-slide-to="0" class="active"></li>
