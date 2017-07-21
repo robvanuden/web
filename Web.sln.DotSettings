@@ -7,10 +7,9 @@
 	<s:String x:Key="/Default/CodeStyle/FileHeader/FileHeaderText/@EntryValue">Copyright Matthias Koch 2017.&#xD;
 Distributed under the MIT License.&#xD;
 https://github.com/nuke-build/web/blob/master/LICENSE</s:String>
-	<s:String x:Key="/Default/Environment/Hierarchy/Build/SolBuilderDuo/UseMsbuildSolutionBuilder/@EntryValue">NewVersion</s:String>
-	<s:Boolean x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=7878742012C1E5459788A794581AD8A1/@KeyIndexDefined">True</s:Boolean>
-	<s:String x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=7878742012C1E5459788A794581AD8A1/AbsolutePath/@EntryValue">C:\code\nuke-build\web\build\.build.csproj.DotSettings</s:String>
-	<s:String x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=7878742012C1E5459788A794581AD8A1/RelativePath/@EntryValue">..\build\.build.csproj.DotSettings</s:String>
+	
+	
+	
 	
 	
 	
@@ -18,13 +17,13 @@ https://github.com/nuke-build/web/blob/master/LICENSE</s:String>
 	
 	
 	<s:Boolean x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=971D2D0D6A22C84E9A514D1166017346/@KeyIndexDefined">True</s:Boolean>
-	<s:String x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=971D2D0D6A22C84E9A514D1166017346/AbsolutePath/@EntryValue">C:\code\nuke-build\nuke\source\Inspections.DotSettings</s:String>
-	<s:String x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=971D2D0D6A22C84E9A514D1166017346/RelativePath/@EntryValue">..\Inspections.DotSettings</s:String>
-	<s:String x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=A68CFA51EFE4364DA61BFD270E021A11/AbsolutePath/@EntryValue">C:\code\nuke-build\nuke\source\CodeStyle.DotSettings</s:String>
-	<s:String x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=A68CFA51EFE4364DA61BFD270E021A11/RelativePath/@EntryValue">..\CodeStyle.DotSettings</s:String>
+	<s:String x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=971D2D0D6A22C84E9A514D1166017346/AbsolutePath/@EntryValue">C:\code\nuke-build\web\shared\Inspections.DotSettings</s:String>
+	<s:String x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=971D2D0D6A22C84E9A514D1166017346/RelativePath/@EntryValue">..\shared\Inspections.DotSettings</s:String>
+	<s:String x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=A68CFA51EFE4364DA61BFD270E021A11/AbsolutePath/@EntryValue">C:\code\nuke-build\web\shared\CodeStyle.DotSettings</s:String>
+	<s:String x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=A68CFA51EFE4364DA61BFD270E021A11/RelativePath/@EntryValue">..\shared\CodeStyle.DotSettings</s:String>
 	<s:Boolean x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=A68CFA51EFE4364DA61BFD270E021A11/@KeyIndexDefined">True</s:Boolean>
-	<s:Boolean x:Key="/Default/Environment/InjectedLayers/InjectedLayerCustomization/=File7878742012C1E5459788A794581AD8A1/@KeyIndexDefined">True</s:Boolean>
-	<s:Double x:Key="/Default/Environment/InjectedLayers/InjectedLayerCustomization/=File7878742012C1E5459788A794581AD8A1/RelativePriority/@EntryValue">4</s:Double>
+	
+	
 	
 	
 	

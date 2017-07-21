@@ -27,12 +27,12 @@ using static Nuke.Core.IO.PathConstruction;
 using static Nuke.Core.Logger;
 using static Nuke.Git.GitTasks;
 
-class WebBuild : Build
+class Build : NukeBuild
 {
     [Parameter] readonly string FtpUsername;
     [Parameter] readonly string FtpPassword;
 
-    public static int Main () => Execute<WebBuild>(x => x.BuildSite);
+    public static int Main () => Execute<Build>(x => x.BuildSite);
 
     string DocFxFile => RootDirectory / "docfx.json";
     string SiteDirectory => OutputDirectory / "site";
@@ -95,7 +95,7 @@ class WebBuild : Build
 
     Target Publish => _ => _
             .DependsOn(BuildSite)
-            .RequiresParameters(() => FtpUsername, () => FtpPassword)
+            .Requires(() => FtpUsername, () => FtpPassword)
             .Executes(
                 () => FtpCredentials = new NetworkCredential(FtpUsername, FtpPassword),
                 () => FtpUploadDirectoryRecursively(SiteDirectory, "ftp://www58.world4you.com"));
