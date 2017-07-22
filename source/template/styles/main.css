@@ -1,7 +1,7 @@
-a {
+.feature a, footer a {
   color: #32ADFF;
 }
-a:hover {
+.feature a:hover, footer a:hover {
     color: #FFBB00;
 }
 
