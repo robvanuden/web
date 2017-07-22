@@ -12,6 +12,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.MSBuild;
 using Nuke.Common;
+using Nuke.Common.IO;
 using Nuke.Common.Tools.MSBuild;
 using Nuke.Core;
 using Nuke.Core.BuildServers;
@@ -33,23 +34,7 @@ static class CustomToc
             });
 
         var solutions = solutionFiles.Select(x => msBuildWorkspace.OpenSolutionAsync(x).Result).ToList();
-
-        var relevantTypeSymbols = (
-                    from solution in solutions
-                    from project in solution.Projects
-                    let compilation = project.GetCompilationAsync().Result
-                    from document in project.Documents
-                    let syntaxTree = document.GetSyntaxTreeAsync().Result
-                    let semanticModel = compilation.GetSemanticModel(syntaxTree)
-                    from classDeclarationSyntax in syntaxTree.GetCompilationUnitRoot().DescendantNodes().OfType<ClassDeclarationSyntax>()
-                    let typeSymbol = semanticModel.GetDeclaredSymbol(classDeclarationSyntax)
-                    let kind = GetKind(typeSymbol)
-                    where typeSymbol.ContainingAssembly.Name != ".build" && kind != Kind.None
-                    select new { TypeSymbol = typeSymbol, Kind = kind })
-                .Distinct(x => x.TypeSymbol.ToDisplayString())
-                .ForEachLazy(x => Info($"Found '{x.TypeSymbol.ToDisplayString()}' ({x.Kind})."))
-                .ToLookup(x => x.Kind, x => x.TypeSymbol);
-
+        
         var iconClasses = (
                     from solution in solutions
                     from project in solution.Projects
@@ -69,7 +54,23 @@ static class CustomToc
                            })
                 .ToDictionary(x => x.ClassFullName, x => x.IconClass);
 
-        File.WriteAllText(tocFile,
+        var relevantTypeSymbols = (
+                    from solution in solutions
+                    from project in solution.Projects
+                    let compilation = project.GetCompilationAsync().Result
+                    from document in project.Documents
+                    let syntaxTree = document.GetSyntaxTreeAsync().Result
+                    let semanticModel = compilation.GetSemanticModel(syntaxTree)
+                    from classDeclarationSyntax in syntaxTree.GetCompilationUnitRoot().DescendantNodes().OfType<ClassDeclarationSyntax>()
+                    let typeSymbol = semanticModel.GetDeclaredSymbol(classDeclarationSyntax)
+                    let kind = GetKind(typeSymbol, iconClasses)
+                    where typeSymbol.ContainingAssembly.Name != ".build" && kind != Kind.None
+                    select new { TypeSymbol = typeSymbol, Kind = kind })
+                .Distinct(x => x.TypeSymbol.ToDisplayString())
+                .ForEachLazy(x => Info($"Found '{x.TypeSymbol.ToDisplayString()}' ({x.Kind})."))
+                .ToLookup(x => x.Kind, x => x.TypeSymbol);
+
+        TextTasks.WriteAllText(tocFile,
             new StringBuilder()
                     .WriteBlock(Kind.Entry, relevantTypeSymbols, iconClasses)
                     .WriteBlock(Kind.Servers, relevantTypeSymbols, iconClasses)
@@ -87,9 +88,9 @@ static class CustomToc
         Addons
     }
 
-    static Kind GetKind (ITypeSymbol typeSymbol)
+    static Kind GetKind (ITypeSymbol typeSymbol, Dictionary<string, string> iconClasses)
     {
-        if (IsEntryType(typeSymbol))
+        if (IsEntryType(typeSymbol, iconClasses))
             return Kind.Entry;
         if (IsServerType(typeSymbol))
             return Kind.Servers;
@@ -128,25 +129,19 @@ static class CustomToc
                 .AppendLine($"  icon: {typeSymbol.GetIconClassText(iconClasses)}");
 
 
-    static bool IsEntryType (ITypeSymbol typeSymbol)
+    static bool IsEntryType (ITypeSymbol typeSymbol, Dictionary<string, string> iconClasses)
     {
-        if (IsBuildType (typeSymbol))
+        if (!iconClasses.ContainsKey(typeSymbol.ToDisplayString()))
+            return false;
+
+        if (typeSymbol.ContainingAssembly.Name == typeof(NukeBuild).Assembly.GetName().Name)
             return true;
 
         return new[]
                {
-                   typeof(ControlFlow),
-                   typeof(EnvironmentInfo),
-                   typeof(ProcessTasks),
-                   typeof(Logger),
-                   typeof(DefaultSettings),
-                   typeof(FileSystemTasks),
-                   typeof(PathConstruction)
+                   typeof(DefaultSettings)
                }.Any(x => typeSymbol.ToDisplayString().Equals(x.FullName));
     }
-
-    static bool IsBuildType (ITypeSymbol typeSymbol)
-        => typeSymbol.DescendantsAndSelf(x => x.BaseType).Any(x => x.ToDisplayString().Equals(typeof(Build).FullName));
 
     static bool IsServerType (this ITypeSymbol typeSymbol)
         => typeSymbol.GetAttributes().Any(x => x.AttributeClass.ToDisplayString().Equals(typeof(BuildServerAttribute).FullName));
@@ -163,8 +158,6 @@ static class CustomToc
     {
         if (iconClasses.TryGetValue(typeSymbol.ToDisplayString(), out var iconClass))
             return iconClass;
-        if (IsEntryType(typeSymbol))
-            return "star-full";
         if (IsServerType(typeSymbol))
             return "server";
 
