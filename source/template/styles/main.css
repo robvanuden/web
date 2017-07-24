@@ -1,8 +1,11 @@
-.feature a, footer a {
+#header ol a, footer a {
   color: #32ADFF;
 }
-.feature a:hover, footer a:hover {
-    color: #FFBB00;
+a:hover {
+  color: #FFBB00 !important;
+}
+.btn:hover {
+  color:#000 !important;
 }
 
 
@@ -67,6 +70,10 @@
   margin:0;
   font-weight: bold;
   text-shadow: 0 1px 2px #777;
+}
+.jumbotron .btn {
+  text-shadow: 0 0px 0px;
+  text-transform: uppercase;
 }
 @media only screen and (max-width: 768px) {
   #header {
