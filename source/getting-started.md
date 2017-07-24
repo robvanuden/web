@@ -41,10 +41,9 @@ When executed, the setup scripts will:
 
 - Generate a _.nuke_ configuration file in the root directory, which references the chosen solution file
 - Generate a [_build.ps1_](https://raw.githubusercontent.com/nuke-build/nuke/master/bootstrapping/build.ps1) and [_build.sh_](https://raw.githubusercontent.com/nuke-build/nuke/master/bootstrapping/build.sh) in the current directory
-- Copy templates for project file and minimal build file
+- Copy templates for project file and [minimal build file](https://raw.githubusercontent.com/nuke-build/nuke/master/bootstrapping/Build.cs)
 - Add build project to the solution file (without build configuration)
 - Download _nuget.exe_ from the provided URL
-- Add the [MyGet source](https://www.myget.org/F/nukebuild/api/v3/index.json) used for Nuke dependencies to _NuGet.config_
 
 For your own awareness, we recommend to review the applied changes using `git diff` or similar tools.
 
@@ -59,11 +58,11 @@ Without further modifications, executing _build.ps1_ or _build.sh_ will:
 
 We also provide a couple of parameters, which can be applied using single or double dash (i.e., `-parameter value` or `--parameter value`):
 
-- `target`: defines the target(s) to be executed; multiple targets are separater by plus sign (i.e., `-target compile+pack`); if no target is defined, the _default_ will be executed
+- `target`: defines the target(s) to be executed; multiple targets are separated by plus sign (i.e., `-target compile+pack`); if no target is defined, the _default_ will be executed
 - `configuration`: defines the configuration to build. Default is _debug_
 - `verbosity`: supported values are `quiet`, `minimal`, `normal` and `verbose`
 - `noinit`: will only compile and execute the build project for improved debugging
-- `nodeps`: will only execute the provided targets and not their dependencies
+- `nodeps`: will only execute the defined targets and not their dependencies
 
 You can also append custom arguments and access them in your build using the `EnvironmentInfo.Argument` alias.
 
@@ -101,7 +100,7 @@ Target definitions are written like this:
 ```c#
 Target MyTarget => _ => _
         .DependsOn(MyOtherTarget)
-        .Executes(() => /* actions */);
+        .Executes(() => { /* actions */ });
 ```
 
 Note that targets are actually expression-bodied properties, and therefore seamlessly provide navigation to themselves and dependent targets via _go to declaration_.
@@ -111,33 +110,36 @@ Note that targets are actually expression-bodied properties, and therefore seaml
 Let's write a more advanced example:
 
 ```c#
+[Parameter] string MyGetApiKey;
+
 Target Publish => _ => _
+        .Requires(MyGetApiKey)
         .OnlyWhen(() => IsServerBuild)
         .DependsOn(Pack)
-        .Executes(() => GlobFiles(OutputDirectory, "*.nupkg")
+        .Executes(() => GlobFiles(OutputDirectory / "packages", "*.nupkg")
                 .ForEach(x => NuGetPush(s => s
                         .SetTargetPath(x)
                         .SetVerbosity(NuGetVerbosity.Detailed)
-                        .SetApiKey(EnsureVariable("MYGET_API_KEY"))
+                        .SetApiKey(MyGetApiKey)
                         .SetSource("https://www.myget.org/F/nukebuild/api/v2/package"))));
 ```
 
+- `[Parameter]`: the execution engine will try to inject values based on command-line arguments and environment variables with the same name as the field.
+- `Requires`: prior to execution of all targets, the execution engine checks if `MyGetApiKey` was set (fast fail).
 - `OnlyWhen`: the target is only executed when running on a server. The property `IsServerBuild` is provided from the `Build` base class, and checks whether any of the known build servers is currently hosting the process (i.e., TeamCity or Bitrise).
 - `DependsOn`: again, this target depends on another target called `Pack`. Multiple dependent targets can be separated by comma since the method accepts `params Target[] targets`.
 - `Executes`:
-  - Files are collected using the glob mechanism.
+  - Files are collected using the glob mechanism. The base directory is constructed with the `/` operator that takes care of platform-specific directory separators
   - For each file, `NuGetPush` is executed with several options applied.
-  - The API key is retrieved using `EnsureVariable`, which would fail the build, if it's not set.
 
-In this example, we called a few methods from other classes, namely `FileSystemTasks.GlobFiles`, `NuGetTasks.NuGetPush` and `EnvironmentInfo.EnsureVariable`. For better readability, those classes should be imported using static imports:
+In this example, we called a few methods from other classes, namely `FileSystemTasks.GlobFiles` and `NuGetTasks.NuGetPush`. For better readability, those methods are called using static imports:
 
 ```c#
-using static Nuke.Common.FileSystem.FileSystemTasks;
 using static Nuke.Common.Tools.NuGet.NuGetTasks;
-using static Nuke.Core.EnvironmentInfo;
+using static Nuke.Core.IO.FileSystemTasks;
 ```
 
-We will try to provide dedicated tooling for this, so that IntelliSense directly offers all `*Tasks` methods. Meanwhile, it's possible that your IDE provides a context action for transforming into a static import usage.
+We will try to provide dedicated tooling for this, so that auto-completion directly offers all `*Tasks` methods. Meanwhile, it's possible that your IDE provides a context action for transforming into a static import usage.
 
 ## Tool Orchestration
 
@@ -146,14 +148,14 @@ Many of the tasks provided are just wrappers around conventional command line to
 When executing a task, the logger will print the exact tool path and arguments, so that you can easily reproduce the invocation. Note that the message is logged as _information_. For `InspectCodeTasks` this would be:
 
 ```
-> C:\Users\user\.nuget\packages\JetBrains.ReSharper.CommandLineTools\2017.1.20170407.131846\tools\inspectcode.exe C:\OSS\Nuke\source\Nuke.sln --output=C:\OSS\Nuke\output\inspectCode.xml
+> C:\Users\user\.nuget\packages\JetBrains.ReSharper.CommandLineTools\2017.1.20170407.131846\tools\inspectcode.exe C:\code\nuke\source\Nuke.sln --output=C:\code\nuke\output\inspectCode.xml
 ```
 
 Are you missing some tools? Just navigate to our [FeatHub page](http://feathub.com/nuke-build/nuke) and suggest it for our next release. Supporting new tools is very easy, since we can utilize our powerful generator. Meanwhile you can still use the `ProcessTasks` class and its aliases.
 
 ## References
 
-For more information check the [documentation section](/api/Nuke.Core.Build.html), ping us on [Gitter](https://gitter.im/nuke-build/nuke), or send a tweet to [@nukebuildnet](https://twitter.com/nukebuildnet).
+For more information check the [documentation section](/api/Nuke.Core.NukeBuild.html), ping us on [Gitter](https://gitter.im/nuke-build/nuke), or send a tweet to [@nukebuildnet](https://twitter.com/nukebuildnet).
 
 Concluding, a few projects using Nuke:
 
