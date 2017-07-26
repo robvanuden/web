@@ -129,7 +129,7 @@ title: Home
   <div class="row">
     <div class="col-md-5">
       <h2><span class="icon icon-keyboard"></span> Full IDE support</h2>
-      <p>Builds are full-fledged C# projects. No magic involved! That means all the powerful IDE features like <a id="auto-completion">auto-completion</a>, refactorings and formatting will celebrate their comeback. Targets are defined as <em>expression-bodied properties</em> and therefore provide <a id="navigation">superior navigation</a>. Also target dependency definitions and rename refactorings benefit from this approach. Ultimately, <a id="debugging">debugging</a> is available just as you know it. No more writing debug output to the console!</p>
+      <p>Builds are full-fledged C# projects. No preprocessing involved! That means all the powerful IDE features like <a id="auto-completion">auto-completion</a>, refactorings and formatting will celebrate their comeback. Targets are defined as <em>expression-bodied properties</em> and therefore provide <a id="navigation">superior navigation</a>. Also target dependency definitions and rename refactorings benefit from this approach. Ultimately, <a id="debugging">debugging</a> is available just as you know it. No more writing debug output to the console!</p>
     </div>
     <div class="col-md-7">
       <div id="ide-support-carousel" class="carousel slide" data-ride="carousel1">
