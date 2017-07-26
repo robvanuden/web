@@ -171,8 +171,23 @@ a:hover {
 }
 
 
-
-
+#generation-panel {
+  margin-top:30px;
+}
+#generation-panel .gist-file > div > div > div > div {
+  height:400px;
+  overflow:scroll;
+}
+#generation-panel .panel-body {
+  height:440px;
+}
+#generation-panel .panel-body code {
+  background:white;
+}
+.panel-heading, .nav-tabs {
+  padding-bottom:0;
+  border-bottom:0;
+}
 
 
 .toc .nav > li > a {

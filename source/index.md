@@ -114,7 +114,7 @@ title: Home
         <ol class="definition">
           <li>A cross-platform <a href="https://martinfowler.com/articles/continuousIntegration.html#AutomateTheBuild">build automation</a> system with C# DSL.</li>
           <li>An approach to embrace existing IDE tooling.</li>
-          <li>A state where every developer in a team is able to manage and change the build.</li>
+          <li>A state where everyone in a team is able to manage and change the build.</li>
         </ol>
         <p>
         <a class="btn btn-default btn-md" href="/getting-started.html" role="button">Read more</a>
@@ -229,6 +229,41 @@ title: Home
           <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
           <span class="sr-only">Next</span>
         </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+<!-- CODE GENERATION -->
+<div class="container feature">
+  <h2><span class="icon icon-magic-wand"></span> Code Generation</h2>
+  <p>Implementing support for CLI tools is crucial for build systems. We provide a code generator to solve this problem! It works based on <a href="https://github.com/nuke-build/tools">JSON definition files</a> which are usually <a href="https://vimeo.com/221086461">written within several minutes</a>. As output we generate a comprehensive structure of entry methods, data classes, enumerations and extension methods. Not only does this structure implement the builder pattern; we also provide extension points for more complicated implementations as well as specialized methods for manipulating <em>boolean</em>, <em>list</em> and other argument types.</p>
+  <div id="generation-panel" class="panel with-nav-tabs panel-default">
+    <div class="panel-heading">
+      <ul class="nav nav-tabs">
+        <li class="active"><a href="#input" data-toggle="tab">Input</a></li>
+        <li class="dropdown">
+          <a href="#" data-toggle="dropdown">Generated Code <span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li><a href="#entry-methods" data-toggle="tab">Entry Methods</a></li>
+            <li><a href="#data-classes" data-toggle="tab">Data Classes</a></li>
+            <li><a href="#extensions" data-toggle="tab">Extensions</a></li>
+          </ul>
+        </li>
+        <li><a href="#custom" data-toggle="tab">Custom Code</a></li>
+      </ul>
+    </div>
+    <div class="panel-body">
+      <div class="tab-content">
+        <div class="tab-pane fade in active" id="input"><code data-gist-id="1173999afc77e94fb10065c44ea6550c" data-gist-hide-footer="true"></code></div>
+        <div class="tab-pane fade" id="entry-methods"><code data-gist-id="cbd0e26a3a98e6d5d76c92fc10f9f8df" data-gist-hide-footer="true"></code></div>
+        <div class="tab-pane fade" id="data-classes"><code data-gist-id="4cd3a4b1724b5be1e29a8ca5b72fbc52" data-gist-hide-footer="true"></code></div>
+        <div class="tab-pane fade" id="extensions"><code data-gist-id="fc63dcf3df9f6d0587cee7d48d2afca2" data-gist-hide-footer="true"></code></div>
+        <div class="tab-pane fade" id="custom"><code data-gist-id="0f58468d7aeb41d544bbf62d86381608" data-gist-hide-footer="true"></code></div>
       </div>
     </div>
   </div>
