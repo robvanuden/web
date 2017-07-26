@@ -175,7 +175,7 @@ title: Home
   <div class="row">
     <div class="col-md-6 list-left">
       <h2><span class="icon icon-syringe2"></span> Parameter Injection</h2>
-      <p>Fields marked with <code>[Parameter]</code> will be populated from command-line arguments and environment variables. They can also be set as requirements for targets, that will be validated prior to execution.</p>
+      <p>Fields can be marked with different attributes to get their value injected prior to execution. For instance, <code>[Parameter]</code> retrieves the value from command-line arguments and environment variables with the same name as the field.</p>
       <img src="images/parameter-injection.png" alt="Parameter Injection">
     </div>
     <div class="col-md-6 list-right">
