@@ -113,7 +113,7 @@ Let's write a more advanced example:
 [Parameter] string MyGetApiKey;
 
 Target Publish => _ => _
-        .Requires(MyGetApiKey)
+        .Requires(() => MyGetApiKey)
         .OnlyWhen(() => IsServerBuild)
         .DependsOn(Pack)
         .Executes(() => GlobFiles(OutputDirectory / "packages", "*.nupkg")
@@ -126,7 +126,7 @@ Target Publish => _ => _
 
 - `[Parameter]`: the execution engine will try to inject values based on command-line arguments and environment variables with the same name as the field.
 - `Target`: defines a target as _expression-bodied property_. The type itself is a delegate, hence, the property is implemented as `_ => _`.
-- `Requires`: prior to execution of all targets, the execution engine checks if `MyGetApiKey` was set (fast fail).
+- `Requires`: prior to execution of all targets, the execution engine checks if `MyGetApiKey` was set (fast fail). Also boolean expressions can be specified here.
 - `OnlyWhen`: the target is only executed when running on a server. The property `IsServerBuild` is provided from the `Build` base class, and checks whether any of the known build servers is currently hosting the process (i.e., TeamCity or Bitrise).
 - `DependsOn`: again, this target depends on another target called `Pack`. Multiple dependent targets can be separated by comma since the method accepts `params Target[] targets`.
 - `Executes`:

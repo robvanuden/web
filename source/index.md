@@ -174,7 +174,7 @@ title: Home
 <div id="feature-list" class="container feature">
   <div class="row">
     <div class="col-md-6 list-left">
-      <h2><span class="icon icon-syringe2"></span> Parameter Injection</h2>
+      <h2><span class="icon icon-syringe2"></span> Value Injections</h2>
       <p>Fields can be marked with different attributes to get their value injected prior to execution. For instance, <code>[Parameter]</code> retrieves the value from command-line arguments and environment variables with the same name as the field.</p>
       <img src="images/parameter-injection.png" alt="Parameter Injection">
     </div>
