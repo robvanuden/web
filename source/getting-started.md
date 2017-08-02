@@ -56,7 +56,7 @@ Without further modifications, executing _build.ps1_ or _build.sh_ will:
 2. Download and execute _Nuke.MSBuildLocator_ which locates the MSBuild executable (Windows only)
 4. Compile and execute the build project
 
-We also provide a couple of parameters, which can be applied using single or double dash (i.e., `-parameter value` or `--parameter value`):
+We also provide a couple of parameters, which can be applied with a dash prefix (i.e., `-parameter value`):
 
 - `target`: defines the target(s) to be executed; multiple targets are separated by plus sign (i.e., `-target compile+pack`); if no target is defined, the _default_ will be executed
 - `configuration`: defines the configuration to build. Default is _debug_
@@ -124,7 +124,7 @@ Target Publish => _ => _
                         .SetSource("https://www.myget.org/F/nukebuild/api/v2/package"))));
 ```
 
-- `[Parameter]`: the execution engine will try to inject values based on command-line arguments and environment variables with the same name as the field.
+- `[Parameter]`: the execution engine will try to inject values based on command-line arguments and environment variables with the same name as the field. This mechanism works for enums, strings, booleans and string collections (requires the _separator_ to be set).
 - `Target`: defines a target as _expression-bodied property_. The type itself is a delegate, hence, the property is implemented as `_ => _`.
 - `Requires`: prior to execution of all targets, the execution engine checks if `MyGetApiKey` was set (fast fail). Also boolean expressions can be specified here.
 - `OnlyWhen`: the target is only executed when running on a server. The property `IsServerBuild` is provided from the `Build` base class, and checks whether any of the known build servers is currently hosting the process (i.e., TeamCity or Bitrise).
