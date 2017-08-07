@@ -116,12 +116,16 @@ Target Publish => _ => _
         .Requires(() => MyGetApiKey)
         .OnlyWhen(() => IsServerBuild)
         .DependsOn(Pack)
-        .Executes(() => GlobFiles(OutputDirectory / "packages", "*.nupkg")
-                .ForEach(x => NuGetPush(s => s
-                        .SetTargetPath(x)
+        .Executes(() =>
+        {
+            var packages = GlobFiles(OutputDirectory / "packages", "*.nupkg");
+            foreach (var package in packages)
+                NuGetPush(s => s
+                        .SetTargetPath(package)
                         .SetVerbosity(NuGetVerbosity.Detailed)
                         .SetApiKey(MyGetApiKey)
-                        .SetSource("https://www.myget.org/F/nukebuild/api/v2/package"))));
+                        .SetSource("https://www.myget.org/F/nukebuild/api/v2/package"));
+        });
 ```
 
 - `[Parameter]`: the execution engine will try to inject values based on command-line arguments and environment variables with the same name as the field. This mechanism works for enums, strings, booleans and string collections (requires the _separator_ to be set).
