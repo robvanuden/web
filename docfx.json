@@ -46,7 +46,7 @@
     "dest": "output/site",
 
     "globalMetadata": {
-      "_appTitle": "nuke-build",
+      "_appTitle": "NUKE",
       "_enableSearch": true,
       "_disableBreadcrumb": true
     },
