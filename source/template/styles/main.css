@@ -217,6 +217,19 @@ a:hover {
 .article {
   margin-top: 50px;
 }
+.article img {
+  height:auto;
+  max-width:80%;
+  display:block;
+  box-shadow: 7px 7px 10px grey;
+  margin:20px auto;
+}
+@media only screen and (max-width: 768px) {
+  .article img {
+    margin:auto;
+    max-width:100%;
+  }
+}
 .toc {
   padding-bottom:20px;
 }

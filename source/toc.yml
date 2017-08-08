@@ -2,6 +2,8 @@
   href: index.md
 - name: Getting Started
   href: getting-started.md
+- name: Command-Line
+  href: command-line.md
 - name: Documentation
   href: api/
 - name: GitHub
