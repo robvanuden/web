@@ -16,7 +16,7 @@ using Nuke.Core.Utilities.Collections;
 using static CustomToc;
 using static Disclaimer;
 using static Nuke.Common.IO.FtpTasks;
-using static Nuke.Common.IO.YamlTasks;
+using static Nuke.Common.IO.SerializationTasks;
 using static Nuke.Common.Tools.DocFx.DocFxTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 using static Nuke.Common.Tools.MSBuild.MSBuildTasks;
