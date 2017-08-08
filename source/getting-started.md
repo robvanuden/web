@@ -53,7 +53,7 @@ Without further modifications, executing _build.ps1_ or _build.sh_ will:
 
 1. Download or update the _nuget.exe_
 3. Restore dependencies for the build project
-2. Download and execute _Nuke.MSBuildLocator_ which locates the MSBuild executable (Windows only)
+2. Download and execute _Nuke.MSBuildLocator_ which locates the MSBuild executable (only required for Windows)
 4. Compile and execute the build project
 
 We also provide a couple of parameters, which can be applied with a dash prefix (i.e., `-parameter value`):
