@@ -157,8 +157,9 @@ title: Home
 </div>
 
 
+
 <!-- BOOTSTRAPPING JUMBOTRON -->
-<div id="platforms" class="jumbotron feature">
+<div class="jumbotron small-jumbotron feature">
   <div class="container">
     <div class="row">
       <h2>Bootstrapping for all platforms included.</h2>
@@ -168,6 +169,54 @@ title: Home
     </div>
   </div>
 </div>
+
+
+
+<!-- CODE-GENERATION -->
+<div class="container feature">
+  <div class="row">
+    <div class="col-md-5 col-md-push-7">
+      <h2><span class="icon icon-magic-wand"></span> Code-Generation</h2>
+      <p>We utilize <a id="references">ordinary CLI references</a> and collect information like argument types, formatting and help texts into <a id="metadata">language-agnostic metadata files</a>. This process is aided by <a id="schema">auto-completion</a>. The metadata is consumed by our custom code-generator, which will generate a comprehensive structure of entry methods, data classes, enumerations and extension methods. This approach <a href="https://vimeo.com/221086461">is fast</a>, reduces the risk of bugs and typos, and doesn't require tests. Most importantly, it always ensures a consistent API.</p>
+    </div>
+    <div class="col-md-7 col-lg-pull-5">
+      <div id="code-generation-carousel" class="carousel slide" data-ride="carousel4">
+        <ol class="carousel-indicators">
+          <li data-target="#code-generation-carousel" data-slide-to="0" class="active"></li>
+          <li data-target="#code-generation-carousel" data-slide-to="1"></li>
+          <li data-target="#code-generation-carousel" data-slide-to="2"></li>
+        </ol>
+        <div class="carousel-inner" role="listbox">
+          <div class="item"><img src="images/references.png" data-color="lightblue" alt="CLI Reference"></div>
+          <div class="item"><img src="images/metadata.png" data-color="firebrick" alt="Converted Metadata"></div>
+          <div class="item"><img src="images/schema.png" data-color="firebrick" alt="JSON Schema"></div>
+        </div>
+        <a class="left carousel-control" href="#code-generation-carousel" role="button" data-slide="prev">
+          <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+          <span class="sr-only">Previous</span>
+        </a>
+        <a class="right carousel-control" href="#code-generation-carousel" role="button" data-slide="next">
+          <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+          <span class="sr-only">Next</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- WHAT ELSE JUMBOTRON -->
+<div class="jumbotron small-jumbotron feature">
+  <div class="container">
+    <div class="row">
+      <h2>What else?</h2>
+      <h2>...</h2>
+      <h2>A lot more!</h2>
+    </div>
+  </div>
+</div>
+
 
 
 <!-- FEATURE LIST -->
@@ -234,37 +283,3 @@ title: Home
   </div>
 </div>
 
-
-
-
-
-<!-- CODE GENERATION -->
-<div class="container feature">
-  <h2><span class="icon icon-magic-wand"></span> Code Generation</h2>
-  <p>Implementing support for CLI tools is crucial for build systems. We provide a code generator to solve this problem! It works based on <a href="https://github.com/nuke-build/tools">JSON definition files</a> which are usually <a href="https://vimeo.com/221086461">written within several minutes</a>. As output we generate a comprehensive structure of entry methods, data classes, enumerations and extension methods. Not only does this structure implement the builder pattern; we also provide extension points for more complicated implementations as well as specialized methods for manipulating <em>boolean</em>, <em>list</em> and other argument types.</p>
-  <div id="generation-panel" class="panel with-nav-tabs panel-default">
-    <div class="panel-heading">
-      <ul class="nav nav-tabs">
-        <li class="active"><a href="#input" data-toggle="tab">Input</a></li>
-        <li class="dropdown">
-          <a href="#" data-toggle="dropdown">Generated Code <span class="caret"></span></a>
-          <ul class="dropdown-menu" role="menu">
-            <li><a href="#entry-methods" data-toggle="tab">Entry Methods</a></li>
-            <li><a href="#data-classes" data-toggle="tab">Data Classes</a></li>
-            <li><a href="#extensions" data-toggle="tab">Extensions</a></li>
-          </ul>
-        </li>
-        <li><a href="#custom" data-toggle="tab">Custom Code</a></li>
-      </ul>
-    </div>
-    <div class="panel-body">
-      <div class="tab-content">
-        <div class="tab-pane fade in active" id="input"><code data-gist-id="1173999afc77e94fb10065c44ea6550c" data-gist-hide-footer="true"></code></div>
-        <div class="tab-pane fade" id="entry-methods"><code data-gist-id="cbd0e26a3a98e6d5d76c92fc10f9f8df" data-gist-hide-footer="true"></code></div>
-        <div class="tab-pane fade" id="data-classes"><code data-gist-id="4cd3a4b1724b5be1e29a8ca5b72fbc52" data-gist-hide-footer="true"></code></div>
-        <div class="tab-pane fade" id="extensions"><code data-gist-id="fc63dcf3df9f6d0587cee7d48d2afca2" data-gist-hide-footer="true"></code></div>
-        <div class="tab-pane fade" id="custom"><code data-gist-id="0f58468d7aeb41d544bbf62d86381608" data-gist-hide-footer="true"></code></div>
-      </div>
-    </div>
-  </div>
-</div>

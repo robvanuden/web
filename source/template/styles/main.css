@@ -158,11 +158,11 @@ a:hover {
 }
 
 
-#platforms .row {
+.small-jumbotron .row {
   text-align:center;
   padding:20px;
 }
-#platforms .icon {
+.small-jumbotron .icon {
   font-size:120px;
   display:inline-block;
   margin: 40px 40px 20px 40px;
