@@ -15,7 +15,7 @@ This article will walk you through the most essential things to know when writin
 
 _Support for dotnet CLI is currently in progress._
 
-We prepared setup scripts for [PowerShell](https://nuke.build/powershell) and [Bash](https://nuke.build/bash) to help you with the initial step of creating proper build scripts. During execution you'll be asked to provide the following information:
+We prepared setup scripts for [PowerShell](https://nuke.build/powershell) and [Bash](https://nuke.build/bash) to help setting up the environment for you. During execution you'll be asked to provide the following information:
 
 - Solution file selection (if multiple exist)
 - Download URL for _nuget.exe_ (default: latest from nuget.org)
@@ -43,7 +43,6 @@ When executed, the setup scripts will:
 - Generate a [_build.ps1_](https://raw.githubusercontent.com/nuke-build/nuke/master/bootstrapping/build.ps1) and [_build.sh_](https://raw.githubusercontent.com/nuke-build/nuke/master/bootstrapping/build.sh) in the current directory
 - Copy templates for project file and [minimal build file](https://raw.githubusercontent.com/nuke-build/nuke/master/bootstrapping/Build.cs)
 - Add build project to the solution file (without build configuration)
-- Download _nuget.exe_ from the provided URL
 
 For your own awareness, we recommend to review the applied changes using `git diff` or similar tools.
 
@@ -93,9 +92,7 @@ Even before the actual targets are executed, failures are possible:
 
 ## Build Authoring
 
-Builds are written in classes. You should make advantage of static imports as much as possible. Most of the APIs are designed as fluent syntax that can be used inside lambdas, but this shouldn't prevent you from writing normal method bodies.
-
-Target definitions are written like this:
+Builds are written in classes. You should make advantage of static imports as much as possible. A simple target definition can look like this:
 
 ```c#
 Target MyTarget => _ => _
@@ -132,7 +129,7 @@ Target Publish => _ => _
 - `Target`: defines a target as _expression-bodied property_. The type itself is a delegate, hence, the property is implemented as `_ => _`.
 - `Requires`: prior to execution of all targets, the execution engine checks if `MyGetApiKey` was set (fast fail). Also boolean expressions can be specified here.
 - `OnlyWhen`: the target is only executed when running on a server. The property `IsServerBuild` is provided from the `Build` base class, and checks whether any of the known build servers is currently hosting the process (i.e., TeamCity or Bitrise).
-- `DependsOn`: again, this target depends on another target called `Pack`. Multiple dependent targets can be separated by comma since the method accepts `params Target[] targets`.
+- `DependsOn`: again, this target depends on another target called `Pack`. Multiple dependent targets can be separated by comma since the method accepts `params Target[] targets`. Targets referenced as `string` are so-called _shadow targets_, and will be silently skipped if absent.
 - `Executes`:
   - Files are collected using the glob mechanism. The base directory is constructed with the `/` operator that takes care of platform-specific directory separators
   - For each file, `NuGetPush` is executed with several options applied.
