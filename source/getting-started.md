@@ -46,6 +46,19 @@ When executed, the setup scripts will:
 
 For your own awareness, we recommend to review the applied changes using `git diff` or similar tools.
 
+### Troubleshooting
+
+The setup scripts are probably the most fragile part of your infrastructure. They strongly depend on your individual environment. If you experience any error, please [create an issue](https://github.com/nuke-build/nuke/issues/new) with all possible details (e.g., error output, operating system). In the meantime, you can use [nuke-build/sample](https://github.com/nuke-build/sample) as a reference to download and adapt the following files:
+
+- _.nuke_
+- _build.sh_
+- _build.ps1_
+- _build/.build.csproj_
+- _build/.build.csproj.dotsettings_
+- _build/Build.cs_
+
+When adding the build project to your solution, keep in mind to remove it from all build configurations.
+
 ## Build Execution
 
 Without further modifications, executing _build.ps1_ or _build.sh_ will:
