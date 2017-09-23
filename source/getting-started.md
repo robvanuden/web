@@ -13,15 +13,15 @@ This article will walk you through the most essential things to know when writin
 
 ## Build Setup
 
-_Support for dotnet CLI is currently in progress._
-
 We prepared setup scripts for [PowerShell](https://nuke.build/powershell) and [Bash](https://nuke.build/bash) to help setting up the environment for you. During execution you'll be asked to provide the following information:
 
 - Solution file selection (if multiple exist)
+- Platform. Either .NET Framework / Mono or the .NET Core tooling.
+- Project format. The old csproj format that is supported by all MSBuild versions, whereas the SDK-based is only supported by MSBuild 15.0.
+- Version of NUKE framework (default: current latest)
 - Download URL for _nuget.exe_ (default: latest from nuget.org)
 - Directory for your build project (default: _./build_)
 - Name for your build project (default: _.build_; this way it's the first item in the SolutionExplorer)
-- Project format. The old csproj format that is supported by all MSBuild versions, whereas the SDK-based is only supported by MSBuild 15.0.
 
 Note that the current directory of execution is also the location the build scripts will be generated.
 
@@ -53,6 +53,7 @@ The setup scripts are probably the most fragile part of your infrastructure. The
 - _.nuke_
 - _build.sh_
 - _build.ps1_
+- _build.cmd_
 - _build/.build.csproj_
 - _build/.build.csproj.dotsettings_
 - _build/Build.cs_
@@ -63,18 +64,20 @@ When adding the build project to your solution, keep in mind to remove it from a
 
 Without further modifications, executing _build.ps1_ or _build.sh_ will:
 
-1. Download or update the _nuget.exe_
+1. Download or update either the .NET Core SDK or _nuget.exe_
 3. Restore dependencies for the build project
 2. Download and execute _Nuke.MSBuildLocator_ which locates the MSBuild executable (only required for Windows)
 4. Compile and execute the build project
 
-We also provide a couple of parameters, which can be applied with a dash prefix (i.e., `-parameter value`):
+Various parameters can be passed to the build: `build [target] [-configuration <value>] [-nodeps]`
 
-- `target`: defines the target(s) to be executed; multiple targets are separated by plus sign (i.e., `-target compile+pack`); if no target is defined, the _default_ will be executed
+- `target`: defines the target(s) to be executed; multiple targets are separated by plus sign (i.e., `compile+pack`); if no target is defined, the _default_ will be executed
 - `configuration`: defines the configuration to build. Default is _debug_
 - `verbosity`: supported values are `quiet`, `minimal`, `normal` and `verbose`
 - `noinit`: will only compile and execute the build project for improved debugging
 - `nodeps`: will only execute the defined targets and not their dependencies
+- `graph`: will generate a HTML view of target dependencies
+- `help`: will show further information about available targets and parameters
 
 You can also append custom arguments and access them in your build using the `EnvironmentInfo.Argument` alias.
 

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net46</TargetFramework>
+    <TargetFramework>net461</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <RootNamespace></RootNamespace>
     <IsPackable>false</IsPackable>
@@ -17,14 +17,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Build" Version="15.1.1012" />
-    <PackageReference Include="Microsoft.Build.Framework" Version="15.1.1012" />
-    <PackageReference Include="Microsoft.Build.Tasks.Core" Version="15.1.1012" />
-    <PackageReference Include="Microsoft.CodeAnalysis" Version="2.2.0" />
-    <PackageReference Include="Nuke.Common" Version="*" />
+    <PackageReference Include="Microsoft.Build" Version="15.5.180" />
+    <PackageReference Include="Microsoft.Build.Framework" Version="15.5.180" />
+    <PackageReference Include="Microsoft.Build.Tasks.Core" Version="15.5.180" />
+    <PackageReference Include="Microsoft.CodeAnalysis" Version="2.6.1" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="2.6.1" />
+    <PackageReference Include="Nuke.Common" Version="0.1.337" />
     <PackageReference Include="Nuke.Git" Version="*" />
     <PackageReference Include="msdn.4.5.2" Version="0.1.0-alpha-1611021200" />
-    <PackageReference Include="docfx.console" Version="*">
+    <PackageReference Include="docfx.console" Version="2.30.0">
       <ExcludeAssets>build</ExcludeAssets>
     </PackageReference>
   </ItemGroup>

@@ -27,8 +27,8 @@ We allow to define custom parameters via fields or properties:
 [Parameter("ApiKey for 'nukebuild' MyGet source.")]
 readonly string MyGetApiKey;
 
-[Parameter("Target(s) to run. Default is specified in 'static int Main' via 'Execute'.", Separator = "+")]
-public string[] Target { get; } = { "Default" };
+[Parameter(Separator = "+")]
+public string[] Items { get; } = { "Default" };
 ```
 
 By utilizing the `[Parameter]` attribute we provide the following features:

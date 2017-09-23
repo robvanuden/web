@@ -2,7 +2,7 @@
 
 BUILD_ARGUMENTS=()
 for i in "$@"; do
-    case $1 in
+    case $(echo $1 | awk '{print tolower($0)}') in
         -n|--noinit) NOINIT=1; shift;;
         *) BUILD_ARGUMENTS+=("$1") ;;
     esac
