@@ -176,8 +176,8 @@ static class CustomToc
     }
 
     static bool IsCommonType(ITypeSymbol typeSymbol)
-        => typeSymbol.ContainingAssembly.Name == typeof(MSBuildTasks).Assembly.GetName().Name
-           || typeSymbol.ContainingAssembly.Name == typeof(MSBuildTasks).Assembly.GetName().Name;
+        => typeSymbol.ContainingAssembly.Name == typeof(NukeBuild).Assembly.GetName().Name || 
+           typeSymbol.ContainingAssembly.Name == typeof(MSBuildTasks).Assembly.GetName().Name;
 
     static string GetName(this ITypeSymbol typeSymbol)
     {

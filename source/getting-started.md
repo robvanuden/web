@@ -9,7 +9,7 @@ title: Getting Started
 
 # Getting Started
 
-This article will walk you through the most essential things to know when writing builds with Nuke. For missing or incomplete information, you can either improve the documentation following the link on the right-hand side, or just ping us on [Gitter](https://gitter.im/nuke-build/nuke).
+This article will walk you through the most essential things to know when writing builds with Nuke. For missing or incomplete information, you can either improve the documentation following the link on the right-hand side, or just ping us on [Slack](https://publicslack.com/slacks/nukebuildnet/invites/new).
 
 ## Build Setup
 
@@ -19,7 +19,7 @@ We prepared setup scripts for [PowerShell](https://nuke.build/powershell) and [B
 - Platform. Either .NET Framework / Mono or the .NET Core tooling.
 - Project format. The old csproj format that is supported by all MSBuild versions, whereas the SDK-based is only supported by MSBuild 15.0.
 - Version of NUKE framework (default: current latest)
-- Download URL for _nuget.exe_ (default: latest from nuget.org)
+- Version of NuGet executable (default: latest)
 - Directory for your build project (default: _./build_)
 - Name for your build project (default: _.build_; this way it's the first item in the SolutionExplorer)
 
@@ -41,41 +41,27 @@ When executed, the setup scripts will:
 
 - Generate a _.nuke_ configuration file in the root directory, which references the chosen solution file
 - Generate a [_build.ps1_](https://raw.githubusercontent.com/nuke-build/nuke/master/bootstrapping/build.ps1) and [_build.sh_](https://raw.githubusercontent.com/nuke-build/nuke/master/bootstrapping/build.sh) in the current directory
-- Copy templates for project file and [minimal build file](https://raw.githubusercontent.com/nuke-build/nuke/master/bootstrapping/Build.cs)
+- Copy templates for project file and minimal build file ([netfx](https://raw.githubusercontent.com/nuke-build/nuke/master/bootstrapping/Build.netfx.cs) or [netcore](https://raw.githubusercontent.com/nuke-build/nuke/master/bootstrapping/Build.netfx.cs))
 - Add build project to the solution file (without build configuration)
 
 For your own awareness, we recommend to review the applied changes using `git diff` or similar tools.
-
-### Troubleshooting
-
-The setup scripts are probably the most fragile part of your infrastructure. They strongly depend on your individual environment. If you experience any error, please [create an issue](https://github.com/nuke-build/nuke/issues/new) with all possible details (e.g., error output, operating system). In the meantime, you can use [nuke-build/sample](https://github.com/nuke-build/sample) as a reference to download and adapt the following files:
-
-- _.nuke_
-- _build.sh_
-- _build.ps1_
-- _build.cmd_
-- _build/.build.csproj_
-- _build/.build.csproj.dotsettings_
-- _build/Build.cs_
-
-When adding the build project to your solution, keep in mind to remove it from all build configurations.
 
 ## Build Execution
 
 Without further modifications, executing _build.ps1_ or _build.sh_ will:
 
-1. Download or update either the .NET Core SDK or _nuget.exe_
+1. Download or update either the .NET Core SDK or NuGet executable
 3. Restore dependencies for the build project
-2. Download and execute _Nuke.MSBuildLocator_ which locates the MSBuild executable (only required for Windows)
+2. Download and execute _Nuke.MSBuildLocator_ (only for .NET Framework tooling)
 4. Compile and execute the build project
 
-Various parameters can be passed to the build: `build [target] [-configuration <value>] [-nodeps]`
+Various parameters can be passed to the build: `build [targets] [-configuration <value>] [-skip [targets]]`
 
 - `target`: defines the target(s) to be executed; multiple targets are separated by plus sign (i.e., `compile+pack`); if no target is defined, the _default_ will be executed
 - `configuration`: defines the configuration to build. Default is _debug_
 - `verbosity`: supported values are `quiet`, `minimal`, `normal` and `verbose`
 - `noinit`: will only compile and execute the build project for improved debugging
-- `nodeps`: will only execute the defined targets and not their dependencies
+- `skip`: will only execute the defined targets and not their dependencies
 - `graph`: will generate a HTML view of target dependencies
 - `help`: will show further information about available targets and parameters
 
@@ -90,7 +76,6 @@ Target              Status      Duration
 Restore             Executed        0:02
 Clean               Skipped         0:00
 Compile             Executed        0:06
-Link                Skipped         0:00
 Pack                Executed        0:06
 ----------------------------------------
 Total                               0:16
@@ -98,13 +83,6 @@ Total                               0:16
 
 Finished build on 06/08/2017 08:50:38.
 ```
-
-### Troubleshooting
-
-Even before the actual targets are executed, failures are possible:
-
-- _Circular dependencies between target definitions_: you will receive a list of the targets forming a cyclic dependency graph
-- _Target with name '{targetName}' does not exist._: you will receive a list of all defined targets
 
 ## Build Authoring
 
@@ -170,16 +148,6 @@ When executing a task, the logger will print the exact tool path and arguments, 
 ```
 
 Are you missing some tools? Just navigate to our [FeatHub page](http://feathub.com/nuke-build/nuke) and suggest it for our next release. Supporting new tools is very easy, since we can utilize our powerful generator. Meanwhile you can still use the `ProcessTasks` class and its aliases.
-
-## References
-
-For more information check the [documentation section](/api/Nuke.Core.NukeBuild.html), ping us on [Gitter](https://gitter.im/nuke-build/nuke), or send a tweet to [@nukebuildnet](https://twitter.com/nukebuildnet).
-
-Concluding, a few projects using Nuke:
-
-- [nuke-build/nuke](https://github.com/nuke-build/nuke/tree/master/build)
-- [nuke-build/web](https://github.com/nuke-build/web/tree/master/build)
-- &lt;your project&gt; :smile:
 
 <br/>
 <br/>
