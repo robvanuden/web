@@ -14,10 +14,11 @@ using Nuke.Core.Tooling;
 using Nuke.Core.Utilities.Collections;
 using static CustomToc;
 using static Disclaimer;
-using static Nuke.Common.IO.FtpTasks;
-using static Nuke.Common.IO.SerializationTasks;
+using static Nuke.Core.IO.FtpTasks;
+using static Nuke.Core.IO.SerializationTasks;
 using static Nuke.Common.Tools.DocFx.DocFxTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
+using static Nuke.Common.Tools.Git.GitTasks;
 using static Nuke.Core.IO.FileSystemTasks;
 using static Nuke.Core.ControlFlow;
 using static Nuke.Core.EnvironmentInfo;
@@ -54,11 +55,8 @@ class Build : NukeBuild
         .Executes(() =>
         {
             Projects.Select(x => x.Repository)
-                .ForEachLazy(x => Info($"Cloning repository '{x.SvnUrl}'..."))
-                .ForEach(x => StartProcess(
-                        ToolPathResolver.GetPathExecutable("git"),
-                        $"clone {x.CloneUrl} {RepositoriesDirectory / x.Identifier}")
-                    .AssertZeroExitCode());
+                .ForEachLazy(x => Info($"Cloning repository '{x}'..."))
+                .ForEach(x => Git($"clone {x.HttpsUrl} {RepositoriesDirectory / x.Identifier}"));
         });
 
     Target Restore => _ => _
@@ -88,8 +86,8 @@ class Build : NukeBuild
             Projects.Where(x => !string.IsNullOrWhiteSpace(x.PackageId))
                 .ForEachLazy(x => Info($"Writing disclaimer for {x.Repository.Identifier} ({x.PackageId})..."))
                 .ForEach(x => WriteDisclaimer(x,
-                    RepositoriesDirectory / $"{x.Repository.Owner}.{x.Repository.Name}.disclaimer.md",
-                    GlobFiles(RepositoriesDirectory / x.Repository.Owner / x.Repository.Name, "**/*.sln")));
+                    RepositoriesDirectory / $"{x.Repository.Identifier.Replace(oldChar: '/', newChar: '.')}.disclaimer.md",
+                    GlobFiles(RepositoriesDirectory / x.Repository.Identifier, "**/*.sln")));
         });
 
     Target Metadata => _ => _

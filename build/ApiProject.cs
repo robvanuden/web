@@ -11,5 +11,5 @@ class ApiProject
     public string RepositoryUrl { get; set; }
     public string PackageId { get; set; }
 
-    public GitRepository Repository => GitRepository.TryParse(RepositoryUrl);
+    public GitRepository Repository => GitRepository.FromUrl(RepositoryUrl);
 }

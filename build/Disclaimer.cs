@@ -53,7 +53,8 @@ static class Disclaimer
     {
         const string org = "nuke-build";
 
-        var owner = apiProject.Repository.Owner;
+        var identifier = apiProject.Repository.Identifier;
+        var owner = identifier.Substring(0, identifier.IndexOf(value: '/') - 1);
         if (owner == org)
             return builder;
 
@@ -74,7 +75,7 @@ static class Disclaimer
             .AppendLine("  <span class=\"icon icon-info alert-icon\"></span>")
             .AppendLine($"  This API is part of the <a href=\"https://nuget.org/packages/{packageId}\"><strong>{packageId}</strong></a> package.")
             .AppendLine(
-                $"  The code is available at <a href=\"{repository.SvnUrl}\"><strong>{repository.Endpoint}/{repository.Identifier}</strong></a>.")
+                $"  The code is available at <a href=\"{repository}\"><strong>{repository.Endpoint}/{repository.Identifier}</strong></a>.")
             .AppendLine("</div>");
     }
 }

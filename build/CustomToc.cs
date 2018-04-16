@@ -10,8 +10,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.MSBuild;
-using Nuke.Common.IO;
-using Nuke.Common.Tools;
 using Nuke.Common.Tools.MSBuild;
 using Nuke.Core;
 using Nuke.Core.BuildServers;
