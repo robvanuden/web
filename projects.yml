@@ -1,1 +1,7 @@
 - repositoryUrl: https://github.com/nuke-build/nuke
+- repositoryUrl: https://github.com/GeorgDangl/Nuke.WebDeploy
+  packageId: Nuke.WebDeploy
+- repositoryUrl: https://github.com/GeorgDangl/Nuke.GitHub
+  packageId: Nuke.GitHub
+- repositoryUrl: https://github.com/GeorgDangl/Nuke.WebDocu
+  packageId: Nuke.WebDocu
