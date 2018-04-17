@@ -16,12 +16,12 @@ This article will walk you through the most essential things to know when writin
 We prepared setup scripts for [PowerShell](https://nuke.build/powershell) and [Bash](https://nuke.build/bash) to help setting up the environment for you. During execution you'll be asked to provide the following information:
 
 - Solution file selection (if multiple exist)
-- Platform. Either .NET Framework / Mono or the .NET Core tooling.
-- Project format. The old csproj format that is supported by all MSBuild versions, whereas the SDK-based is only supported by MSBuild 15.0.
+- Build project platform (.NET Framework/Mono, or .NET Core).
+- Build project format (SDK-based or legacy). SDK-based can also build legacy formatted projects.
 - Version of NUKE framework (default: current latest)
-- Version of NuGet executable (default: latest)
-- Directory for your build project (default: _./build_)
-- Name for your build project (default: _.build_; this way it's the first item in the SolutionExplorer)
+- Version of NuGet executable (default: always latest)
+- Directory of the  build project (default: _./build_)
+- Name for the build project (default: _.build_; this way it's the first item in the SolutionExplorer)
 
 Note that the current directory of execution is also the location the build scripts will be generated.
 
@@ -41,7 +41,7 @@ When executed, the setup scripts will:
 
 - Generate a _.nuke_ configuration file in the root directory, which references the chosen solution file
 - Generate a [_build.ps1_](https://raw.githubusercontent.com/nuke-build/nuke/master/bootstrapping/build.ps1) and [_build.sh_](https://raw.githubusercontent.com/nuke-build/nuke/master/bootstrapping/build.sh) in the current directory
-- Copy templates for project file and minimal build file ([netfx](https://raw.githubusercontent.com/nuke-build/nuke/master/bootstrapping/Build.netfx.cs) or [netcore](https://raw.githubusercontent.com/nuke-build/nuke/master/bootstrapping/Build.netfx.cs))
+- Copy templates for project file and minimal build file ([.NET Framework/Mono](https://raw.githubusercontent.com/nuke-build/nuke/master/bootstrapping/Build.netfx.cs) or [.NET Core](https://raw.githubusercontent.com/nuke-build/nuke/master/bootstrapping/Build.netcore.cs))
 - Add build project to the solution file (without build configuration)
 
 For your own awareness, we recommend to review the applied changes using `git diff` or similar tools.
@@ -50,20 +50,24 @@ For your own awareness, we recommend to review the applied changes using `git di
 
 Without further modifications, executing _build.ps1_ or _build.sh_ will:
 
-1. Download or update either the .NET Core SDK or NuGet executable
+1. Download or update .NET Core or NuGet executables
 3. Restore dependencies for the build project
-2. Download and execute _Nuke.MSBuildLocator_ (only for .NET Framework tooling)
+2. For .NET Framework/Mono: download and execute _Nuke.MSBuildLocator_
 4. Compile and execute the build project
 
-Various parameters can be passed to the build: `build [targets] [-configuration <value>] [-skip [targets]]`
+Various parameters can be passed to the build:
+
+```
+build [targets] [-configuration <value>] [-skip [targets]] [...]
+```
 
 - `target`: defines the target(s) to be executed; multiple targets are separated by plus sign (i.e., `compile+pack`); if no target is defined, the _default_ will be executed
-- `configuration`: defines the configuration to build. Default is _debug_
-- `verbosity`: supported values are `quiet`, `minimal`, `normal` and `verbose`
-- `noinit`: will only compile and execute the build project for improved debugging
-- `skip`: will only execute the defined targets and not their dependencies
-- `graph`: will generate a HTML view of target dependencies
-- `help`: will show further information about available targets and parameters
+- `-configuration <value>`: defines the configuration to build. Default is _debug_
+- `-verbosity <value>`: supported values are `quiet`, `minimal`, `normal` and `verbose`
+- `-noinit`: will only compile and execute the build project for improved debugging
+- `-skip [targets]`: if no target is defined, only the explicit stated targets will be executed; multiple targets are separated by plus sign (i.e, `-skip clean+push`)
+- `-graph`: will generate a HTML view of target dependencies
+- `-help`: will show further information about available targets and parameters
 
 You can also append custom arguments and access them in your build using the `EnvironmentInfo.Argument` alias.
 
@@ -86,15 +90,22 @@ Finished build on 06/08/2017 08:50:38.
 
 ## Build Authoring
 
-Builds are written in classes. You should make advantage of static imports as much as possible. A simple target definition can look like this:
+Builds are written as simple console applications. The build class should inherit from the `NukeBuild` base class. Targets are implemented as expression-bodied properties, and therefore seamlessly provide navigation via _go to declaration_. They are typed as `Target`, which actually is a delegate type, this results in the `=> _ => _` language ceremony. A simple build definition can look like this:
 
 ```c#
-Target MyTarget => _ => _
-        .DependsOn(MyOtherTarget)
-        .Executes(() => { /* actions */ });
+class Build : NukeBuild
+{
+    public static int Main() => Execute<Build>(x => x.MyTarget);
+
+    Target MyTarget => _ => _
+        .Executes(() =>
+        {
+            Console.WriteLine("Hello from NUKE!");
+        });
+}
 ```
 
-Note that targets are actually expression-bodied properties, and therefore seamlessly provide navigation to themselves and dependent targets via _go to declaration_.
+The `Main` method should return the result from the `Execute` method and also defines the default target to invoke.
 
 ### Advanced Example
 
@@ -104,26 +115,28 @@ Let's write a more advanced example:
 [Parameter] string MyGetApiKey;
 
 Target Publish => _ => _
-        .Requires(() => MyGetApiKey)
-        .OnlyWhen(() => IsServerBuild)
-        .DependsOn(Pack)
-        .Executes(() =>
+    .Requires(() => MyGetApiKey)
+    .OnlyWhen(() => IsServerBuild)
+    .DependsOn(Pack)
+    .Executes(() =>
+    {
+        var packages = GlobFiles(OutputDirectory / "packages", "*.nupkg");
+        foreach (var package in packages)
         {
-            var packages = GlobFiles(OutputDirectory / "packages", "*.nupkg");
-            foreach (var package in packages)
-                NuGetPush(s => s
-                        .SetTargetPath(package)
-                        .SetVerbosity(NuGetVerbosity.Detailed)
-                        .SetApiKey(MyGetApiKey)
-                        .SetSource("https://www.myget.org/F/nukebuild/api/v2/package"));
-        });
+            NuGetPush(s => s
+                .SetTargetPath(package)
+                .SetVerbosity(NuGetVerbosity.Detailed)
+                .SetApiKey(MyGetApiKey)
+                .SetSource("https://www.myget.org/F/nukebuild/api/v2/package"));
+        }
+    });
 ```
 
 - `[Parameter]`: the execution engine will try to inject values based on command-line arguments and environment variables with the same name as the field. This mechanism works for enums, strings, booleans and string collections (requires the _separator_ to be set).
 - `Target`: defines a target as _expression-bodied property_. The type itself is a delegate, hence, the property is implemented as `_ => _`.
 - `Requires`: prior to execution of all targets, the execution engine checks if `MyGetApiKey` was set (fast fail). Also boolean expressions can be specified here.
 - `OnlyWhen`: the target is only executed when running on a server. The property `IsServerBuild` is provided from the `Build` base class, and checks whether any of the known build servers is currently hosting the process (i.e., TeamCity or Bitrise).
-- `DependsOn`: again, this target depends on another target called `Pack`. Multiple dependent targets can be separated by comma since the method accepts `params Target[] targets`. Targets referenced as `string` are so-called _shadow targets_, and will be silently skipped if absent.
+- `DependsOn`: this target depends on another target called `Pack`. Multiple dependent targets can be separated by comma since the method accepts `params Target[] targets`. Targets referenced as `string` are so-called _shadow targets_, and will be silently skipped if absent.
 - `Executes`:
   - Files are collected using the glob mechanism. The base directory is constructed with the `/` operator that takes care of platform-specific directory separators
   - For each file, `NuGetPush` is executed with several options applied.
@@ -139,7 +152,7 @@ We will try to provide dedicated tooling for this, so that auto-completion direc
 
 ## Tool Orchestration
 
-Many of the tasks provided are just wrappers around conventional command line tools. They are all shipped inside the `Nuke.Common.Tools` namespace. Note that the required dependencies are not automatically added. For instance, to use the `InspectCodeTasks` you need to add a package reference to `JetBrains.ReSharper.CommandLineTools`. Package references are handled the same way as for any other of your projects.
+Many of the tasks provided are simple wrappers around conventional command line tools. They implement a rich interface and are located in the `Nuke.Common.Tools` namespace. Note that the required dependencies are not automatically added. For instance, to use the `InspectCodeTasks` you need to add a package reference to `JetBrains.ReSharper.CommandLineTools`. Package references are handled the same way as for any other of your projects.
 
 When executing a task, the logger will print the exact tool path and arguments, so that you can easily reproduce the invocation. Note that the message is logged as _information_. For `InspectCodeTasks` this would be:
 

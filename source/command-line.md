@@ -9,7 +9,7 @@ title: Command-Line
 
 # Command-Line
 
-We engage by providing an improved command-line experience that also tightly integrates with custom build requirements. _Note for everyone who setup their build before 8/8/17: Please update your build.ps1 and build.sh according to [this commit](https://github.com/nuke-build/nuke/commit/5129b96e724abcaaffa7a382e1c9118fa2d7210a#diff-e3fbc0fa05ffe75c2511bd97868309ff)_.
+We engage by providing an improved command-line experience that also tightly integrates with custom build requirements.
 
 ## Help Text
 
