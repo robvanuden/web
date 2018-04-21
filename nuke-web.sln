@@ -15,7 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "misc", "misc", "{7C019B47-B
 		docfx.json = docfx.json
 		LICENSE = LICENSE
 		projects.yml = projects.yml
-		Web.sln.DotSettings = Web.sln.DotSettings
+		nuke-web.sln.DotSettings = nuke-web.sln.DotSettings
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "source", "source\source.csproj", "{637692B6-18D5-4145-99DA-FEDE611A3533}"
@@ -39,6 +39,5 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{089233B5-69FC-46B1-9281-8506CBB30A66} = {7C019B47-B873-4307-943A-448B40D8FE93}
 	EndGlobalSection
 EndGlobal
