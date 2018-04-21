@@ -10,15 +10,15 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.MSBuild;
+using Nuke.Common;
+using Nuke.Common.BuildServers;
+using Nuke.Common.Execution;
+using Nuke.Common.IO;
+using Nuke.Common.Tooling;
 using Nuke.Common.Tools.MSBuild;
-using Nuke.Core;
-using Nuke.Core.BuildServers;
-using Nuke.Core.Execution;
-using Nuke.Core.IO;
-using Nuke.Core.Tooling;
-using Nuke.Core.Utilities.Collections;
-using static Nuke.Core.ControlFlow;
-using static Nuke.Core.Logger;
+using Nuke.Common.Utilities.Collections;
+using static Nuke.Common.ControlFlow;
+using static Nuke.Common.Logger;
 
 static class CustomToc
 {
@@ -176,8 +176,7 @@ static class CustomToc
     }
 
     static bool IsCommonType(ITypeSymbol typeSymbol)
-        => typeSymbol.ContainingAssembly.Name == typeof(NukeBuild).Assembly.GetName().Name || 
-           typeSymbol.ContainingAssembly.Name == typeof(MSBuildTasks).Assembly.GetName().Name;
+        => typeSymbol.ContainingAssembly.Name == typeof(NukeBuild).Assembly.GetName().Name;
 
     static string GetName(this ITypeSymbol typeSymbol)
     {

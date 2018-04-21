@@ -7,24 +7,22 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using Nuke.Common.Tools;
 using Nuke.Common.Tools.DocFx;
-using Nuke.Core;
-using Nuke.Core.Tooling;
-using Nuke.Core.Utilities.Collections;
+using Nuke.Common;
+using Nuke.Common.Tooling;
+using Nuke.Common.Utilities.Collections;
 using static CustomToc;
 using static Disclaimer;
-using static Nuke.Core.IO.FtpTasks;
-using static Nuke.Core.IO.SerializationTasks;
+using static Nuke.Common.IO.FtpTasks;
+using static Nuke.Common.IO.SerializationTasks;
 using static Nuke.Common.Tools.DocFx.DocFxTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 using static Nuke.Common.Tools.Git.GitTasks;
-using static Nuke.Core.IO.FileSystemTasks;
-using static Nuke.Core.ControlFlow;
-using static Nuke.Core.EnvironmentInfo;
-using static Nuke.Core.IO.PathConstruction;
-using static Nuke.Core.Logger;
-using static Nuke.Core.Tooling.ProcessTasks;
+using static Nuke.Common.IO.FileSystemTasks;
+using static Nuke.Common.ControlFlow;
+using static Nuke.Common.EnvironmentInfo;
+using static Nuke.Common.IO.PathConstruction;
+using static Nuke.Common.Logger;
 
 class Build : NukeBuild
 {
