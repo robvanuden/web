@@ -69,7 +69,9 @@ static class CustomToc
                 from classDeclarationSyntax in syntaxTree.GetCompilationUnitRoot().DescendantNodes().OfType<ClassDeclarationSyntax>()
                 let typeSymbol = semanticModel.GetDeclaredSymbol(classDeclarationSyntax)
                 let kind = GetKind(typeSymbol, iconClasses)
-                where typeSymbol.ContainingAssembly.Name != ".build" && kind != Kind.None
+                where typeSymbol.ContainingAssembly.Name != ".build" &&
+                      !typeSymbol.ToDisplayString().StartsWith("Nuke.Core") &&
+                      kind != Kind.None
                 select new { TypeSymbol = typeSymbol, Kind = kind })
             .Distinct(x => x.TypeSymbol.ToDisplayString())
             .ForEachLazy(x => Info($"Found '{x.TypeSymbol.ToDisplayString()}' ({x.Kind})."))
