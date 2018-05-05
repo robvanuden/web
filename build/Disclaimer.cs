@@ -49,8 +49,8 @@ static class Disclaimer
         return builder
             .AppendLine("<div class=\"alert alert-warning\" role=\"warning\">")
             .AppendLine("  <span class=\"icon icon-warning alert-icon\"></span>")
-            .AppendLine($"  Solely maintained by <a href=\"https://github.com/{owner}\"><strong>@{owner}</strong></a>")
-            .AppendLine($"  Listing approved by the <a href=\"https://github.com/{org}\"><strong>@{org}</strong></a> organization.")
+            .AppendLine($"  Solely maintained by <a href=\"https://github.com/{owner}\"><strong>@{owner}</strong></a>.")
+            .AppendLine($"  Listing approved by <a href=\"https://github.com/{org}\"><strong>@{org}</strong></a>.")
             .AppendLine("</div>");
     }
 
