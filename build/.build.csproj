@@ -17,6 +17,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FluentFTP" Version="19.2.2" />
     <PackageReference Include="Mono.Cecil" Version="0.10.0" />
     <PackageReference Include="NuGet.PackageManagement.NetStandard" Version="4.6.0" />
     <PackageReference Include="Nuke.Common" Version="0.4.0-*" />

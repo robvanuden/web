@@ -59,7 +59,7 @@ partial class Build : NukeBuild
         .DependsOn(DownloadPackages)
         .Executes(() =>
         {
-            WriteCustomDotFx(DocFxFile, BuildProjectDirectory / "docfx.template.json", GenerationDirectory, ApiDirectory);
+            WriteCustomDotFx(DocFxFile, GenerationDirectory, ApiDirectory);
         });
 
     Target CustomToc => _ => _
