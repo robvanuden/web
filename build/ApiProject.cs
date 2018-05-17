@@ -4,12 +4,10 @@
 
 using System;
 using System.Linq;
-using Nuke.Common.Git;
 
 class ApiProject
 {
-    public string RepositoryUrl { get; set; }
     public string PackageId { get; set; }
-
-    public GitRepository Repository => GitRepository.FromUrl(RepositoryUrl);
+    public bool IsExternalRepository => RepositoryUrl != "https://github.com/nuke-build/nuke";
+    public string RepositoryUrl { get; set; }
 }

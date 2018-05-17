@@ -1,0 +1,41 @@
+{
+  "build": {
+    "content": [
+      {
+        "src": "source",
+        "files": [
+          "**/*.md",
+          "**/*.yml"
+        ]
+      }
+    ],
+    "resource": [
+      {
+        "src": "source",
+        "files": [
+          "images/**",
+          "favicons/**"
+        ]
+      }
+    ],
+    "overwrite": [
+      {
+        "src": ".tmp/generation/disclaimer",
+        "files": [
+          "*.disclaimer.md"
+        ]
+      }
+    ],
+    "template": [
+      "default",
+      "source/template"
+    ],
+    "dest": "output/site",
+    "globalMetadata": {
+      "_appTitle": "NUKE",
+      "_enableSearch": true,
+      "_disableBreadcrumb": true
+    },
+    "noLangKeyword": false
+  }
+}

@@ -12,13 +12,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "misc", "misc", "{7C019B47-B
 		.nuke = .nuke
 		build.ps1 = build.ps1
 		build.sh = build.sh
-		docfx.json = docfx.json
 		LICENSE = LICENSE
-		projects.yml = projects.yml
 		nuke-web.sln.DotSettings = nuke-web.sln.DotSettings
+		projects.yml = projects.yml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "source", "source\source.csproj", "{637692B6-18D5-4145-99DA-FEDE611A3533}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "source", "source\source.csproj", "{637692B6-18D5-4145-99DA-FEDE611A3533}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,9 +26,7 @@ Global
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{089233B5-69FC-46B1-9281-8506CBB30A66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{089233B5-69FC-46B1-9281-8506CBB30A66}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{089233B5-69FC-46B1-9281-8506CBB30A66}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{089233B5-69FC-46B1-9281-8506CBB30A66}.Release|Any CPU.Build.0 = Release|Any CPU
 		{637692B6-18D5-4145-99DA-FEDE611A3533}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{637692B6-18D5-4145-99DA-FEDE611A3533}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{637692B6-18D5-4145-99DA-FEDE611A3533}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -38,6 +35,7 @@ Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B20A6AF6-B6AB-4497-818F-86F8BD4F0654}
 	EndGlobalSection
 EndGlobal

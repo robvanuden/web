@@ -7,89 +7,82 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using FluentFTP;
 using Nuke.Common.Tools.DocFx;
 using Nuke.Common;
 using Nuke.Common.Tooling;
 using Nuke.Common.Utilities.Collections;
-using static CustomToc;
+using static CustomTocWriter;
 using static Disclaimer;
-using static Nuke.Common.IO.FtpTasks;
+using static CustomDocFx;
+using static NugetPackageLoader;
 using static Nuke.Common.IO.SerializationTasks;
 using static Nuke.Common.Tools.DocFx.DocFxTasks;
-using static Nuke.Common.Tools.DotNet.DotNetTasks;
-using static Nuke.Common.Tools.Git.GitTasks;
 using static Nuke.Common.IO.FileSystemTasks;
-using static Nuke.Common.ControlFlow;
 using static Nuke.Common.EnvironmentInfo;
 using static Nuke.Common.IO.PathConstruction;
 using static Nuke.Common.Logger;
 
-class Build : NukeBuild
+
+partial class Build : NukeBuild
 {
     public static int Main() => Execute<Build>(x => x.BuildSite);
 
     [Parameter] readonly string FtpUsername;
     [Parameter] readonly string FtpPassword;
+    [Parameter] readonly string FtpServer;
 
     string DocFxFile => RootDirectory / "docfx.json";
     string SiteDirectory => OutputDirectory / "site";
 
-    AbsolutePath RepositoriesDirectory => RootDirectory / "repos";
+    AbsolutePath GenerationDirectory => TemporaryDirectory / "packages";
     AbsolutePath ApiDirectory => SourceDirectory / "api";
 
-    IEnumerable<ApiProject> Projects
-        => YamlDeserializeFromFile<List<ApiProject>>(RootDirectory / "projects.yml");
+    IEnumerable<ApiProject> Projects => YamlDeserializeFromFile<List<ApiProject>>(RootDirectory / "projects.yml");
 
     Target Clean => _ => _
         .Executes(() =>
         {
-            DeleteDirectory(RepositoriesDirectory);
             DeleteDirectory(ApiDirectory);
+            DeleteDirectory(GenerationDirectory);
             EnsureCleanDirectory(OutputDirectory);
         });
 
-    Target Clone => _ => _
+    Target DownloadPackages => _ => _
         .DependsOn(Clean)
         .Executes(() =>
         {
-            Projects.Select(x => x.Repository)
-                .ForEachLazy(x => Info($"Cloning repository '{x}'..."))
-                .ForEach(x => Git($"clone {x.HttpsUrl} {RepositoriesDirectory / x.Identifier}"));
+            InstallPackages(Projects.Select(x => x.PackageId), GenerationDirectory);
         });
 
-    Target Restore => _ => _
-        .DependsOn(Clone)
+    Target CustomDocFx => _ => _
+        .DependsOn(DownloadPackages)
         .Executes(() =>
         {
-            GlobFiles(RepositoriesDirectory, "**/*.sln")
-                .ForEach(x =>
-                {
-                    SuppressErrors(() => DotNetRestore(Path.GetDirectoryName(x)));
-                    //SuppressErrors(() => MSBuild(s => DefaultSettings.MSBuildRestore.SetSolutionFile(x)));
-                    //SuppressErrors(() => NuGetRestore(x));
-                });
+            WriteCustomDotFx(DocFxFile, BuildProjectDirectory / "docfx.template.json", GenerationDirectory, ApiDirectory);
         });
 
     Target CustomToc => _ => _
-        .DependsOn(Restore)
+        .DependsOn(DownloadPackages, Metadata)
         .Executes(() =>
         {
-            WriteCustomToc(ApiDirectory / "toc.yml", GlobFiles(RepositoriesDirectory, "**/*.sln"));
+            GlobFiles(ApiDirectory, "**/toc.yml").ForEach(File.Delete);
+            WriteCustomTocs(ApiDirectory, GlobFiles(GenerationDirectory, "**/lib/*/*.dll"));
         });
 
     Target Disclaimer => _ => _
-        .DependsOn(Restore)
+        .DependsOn(DownloadPackages)
         .Executes(() =>
         {
-            Projects.Where(x => !string.IsNullOrWhiteSpace(x.PackageId))
-                .ForEachLazy(x => Info($"Writing disclaimer for {x.Repository.Identifier} ({x.PackageId})..."))
+            Projects.Where(x => x.IsExternalRepository)
+                .ForEachLazy(x => Info($"Writing disclaimer for {x.PackageId}..."))
                 .ForEach(x => WriteDisclaimer(x,
-                    RepositoriesDirectory / $"{x.Repository.Identifier.Replace(oldChar: '/', newChar: '.')}.disclaimer.md",
-                    GlobFiles(RepositoriesDirectory / x.Repository.Identifier, "**/*.sln")));
+                    ApiDirectory / $"{x.PackageId}.disclaimer.md",
+                    GlobFiles(GenerationDirectory / x.PackageId, "lib/*/*.dll")));
         });
 
     Target Metadata => _ => _
-        .DependsOn(Restore)
+        .DependsOn(DownloadPackages, CustomDocFx)
         .Executes(() =>
         {
             if (IsLocalBuild)
@@ -104,24 +97,33 @@ class Build : NukeBuild
 
     IEnumerable<string> XRefMapFiles
         => GlobFiles(NuGetPackageResolver.GetLocalInstalledPackageDirectory("msdn.4.5.2"), "content/*.zip")
-            .Concat(GlobFiles(RepositoriesDirectory, "specs/xrefmap.yml"));
+            .Concat(GlobFiles(GenerationDirectory, "specs/xrefmap.yml"));
 
     Target BuildSite => _ => _
         .DependsOn(Metadata, CustomToc, Disclaimer)
         .Executes(() =>
         {
             DocFxBuild(DocFxFile, s => s
-                .SetLogLevel(DocFxLogLevel.Verbose)
+                .SetLogLevel(DocFxLogLevel.Warning)
                 .SetXRefMaps(XRefMapFiles)
                 .SetServe(IsLocalBuild));
         });
 
     Target Publish => _ => _
         .DependsOn(BuildSite)
-        .Requires(() => FtpUsername, () => FtpPassword)
+        .Requires(() => FtpUsername, () => FtpPassword, () => FtpServer)
         .Executes(() =>
         {
-            FtpCredentials = new NetworkCredential(FtpUsername, FtpPassword);
-            FtpUploadDirectoryRecursively(SiteDirectory, "ftp://www58.world4you.com");
+            var client = new FtpClient(FtpServer, new NetworkCredential(FtpUsername, FtpPassword));
+            client.Connect();
+
+            Directory.GetDirectories(SiteDirectory, "*", SearchOption.AllDirectories)
+                .ForEach(directory =>
+                {
+                    var files = GlobFiles(directory, "*").ToArray();
+                    var relativePath = GetRelativePath(SiteDirectory, directory);
+                    var uploadedFiles = client.UploadFiles(files, relativePath, verifyOptions: FtpVerify.Retry);
+                    ControlFlow.Assert(uploadedFiles == files.Length, "uploadedFiles == files.Length");
+                });
         });
 }

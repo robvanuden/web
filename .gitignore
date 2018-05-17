@@ -49,6 +49,7 @@ _dotTrace*
 # DocFx
 api
 _site
+/docfx.json
 
 # Repositories
 repos

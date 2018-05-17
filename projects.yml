@@ -1,1 +1,6 @@
-- repositoryUrl: https://github.com/nuke-build/nuke
+- packageId: Nuke.Common
+  repositoryUrl: https://github.com/nuke-build/nuke
+- packageId: Nuke.Azure
+  repositoryUrl: https://github.com/nuke-build/azure
+- packageId: Nuke.Docker
+  repositoryUrl: https://github.com/nuke-build/docker

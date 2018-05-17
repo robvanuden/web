@@ -7,33 +7,25 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.MSBuild;
+using Mono.Cecil;
+using Nuke.Common;
+using Nuke.Common.Utilities.Collections;
+using static Nuke.Common.Logger;
 
 static class Disclaimer
 {
-    public static void WriteDisclaimer(ApiProject apiProject, string disclaimerFile, IEnumerable<string> solutionFiles)
+    public static void WriteDisclaimer(ApiProject apiProject, string disclaimerFile, IEnumerable<string> dllFiles)
     {
-        var msBuildWorkspace = MSBuildWorkspace.Create(
-            new Dictionary<string, string>
-            {
-                { "Configuration", "Release" },
-                { "TargetFramework", "net461" }
-            });
+        var assemblies =
+            dllFiles
+                .ForEachLazy(x => Info($"Loading {x}"))
+                .Select(AssemblyDefinition.ReadAssembly)
+                .ToList();
 
-        var solutions = solutionFiles.Select(x => msBuildWorkspace.OpenSolutionAsync(x).Result).ToList();
-        var relevantSymbols = (
-                from solution in solutions
-                from project in solution.Projects
-                let compilation = project.GetCompilationAsync().Result
-                from document in project.Documents
-                let syntaxTree = document.GetSyntaxTreeAsync().Result
-                let semanticModel = compilation.GetSemanticModel(syntaxTree)
-                from declarationSyntax in syntaxTree.GetCompilationUnitRoot().DescendantNodes().OfType<MemberDeclarationSyntax>()
-                where declarationSyntax is BaseTypeDeclarationSyntax || declarationSyntax is DelegateDeclarationSyntax
-                select semanticModel.GetDeclaredSymbol(declarationSyntax).ToDisplayString())
-            .Distinct().ToList();
+        var relevantSymbols = assemblies.NotNull()
+            .SelectMany(x => x.MainModule.ExportedTypes)
+            .Where(x => x.Namespace != null && x.Namespace.StartsWith("Nuke"))
+            .Distinct(x => x.FullName);
 
         File.WriteAllText(disclaimerFile,
             relevantSymbols.Aggregate(new StringBuilder(),
@@ -53,8 +45,7 @@ static class Disclaimer
     {
         const string org = "nuke-build";
 
-        var identifier = apiProject.Repository.Identifier;
-        var owner = identifier.Substring(0, identifier.IndexOf(value: '/') - 1);
+        var owner = apiProject.PackageId.Substring(startIndex: 0, length: apiProject.PackageId.IndexOf(value: '.') - 1);
         if (owner == org)
             return builder;
 
@@ -69,13 +60,12 @@ static class Disclaimer
     static StringBuilder WriteInformation(this StringBuilder builder, ApiProject apiProject)
     {
         var packageId = apiProject.PackageId;
-        var repository = apiProject.Repository;
         return builder
             .AppendLine("<div class=\"alert alert-info\" role=\"info\">")
             .AppendLine("  <span class=\"icon icon-info alert-icon\"></span>")
             .AppendLine($"  This API is part of the <a href=\"https://nuget.org/packages/{packageId}\"><strong>{packageId}</strong></a> package.")
             .AppendLine(
-                $"  The code is available at <a href=\"{repository}\"><strong>{repository.Endpoint}/{repository.Identifier}</strong></a>.")
+                $"  The code is available at <a href=\"{packageId}\"><strong>{apiProject.RepositoryUrl}</strong></a>.")
             .AppendLine("</div>");
     }
 }
