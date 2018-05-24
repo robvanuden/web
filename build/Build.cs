@@ -24,7 +24,7 @@ using static Nuke.Common.IO.PathConstruction;
 using static Nuke.Common.Logger;
 
 
-partial class Build : NukeBuild
+class Build : NukeBuild
 {
     public static int Main() => Execute<Build>(x => x.BuildSite);
 
@@ -41,6 +41,7 @@ partial class Build : NukeBuild
     IEnumerable<ApiProject> Projects => YamlDeserializeFromFile<List<ApiProject>>(RootDirectory / "projects.yml");
 
     Target Clean => _ => _
+        .OnlyWhen(() => true)
         .Executes(() =>
         {
             DeleteDirectory(ApiDirectory);
@@ -59,7 +60,7 @@ partial class Build : NukeBuild
         .DependsOn(DownloadPackages)
         .Executes(() =>
         {
-            WriteCustomDotFx(DocFxFile, GenerationDirectory, ApiDirectory);
+            WriteCustomDotFx(DocFxFile,BuildProjectDirectory / "docfx.template.json", GenerationDirectory, ApiDirectory);
         });
 
     Target CustomToc => _ => _
@@ -77,7 +78,7 @@ partial class Build : NukeBuild
             Projects.Where(x => x.IsExternalRepository)
                 .ForEachLazy(x => Info($"Writing disclaimer for {x.PackageId}..."))
                 .ForEach(x => WriteDisclaimer(x,
-                    ApiDirectory / $"{x.PackageId}.disclaimer.md",
+                    GenerationDirectory / x.PackageId / $"{x.PackageId}.disclaimer.md",
                     GlobFiles(GenerationDirectory / x.PackageId, "lib/*/*.dll")));
         });
 
@@ -95,17 +96,12 @@ partial class Build : NukeBuild
             DocFxMetadata(DocFxFile, s => s.SetLogLevel(DocFxLogLevel.Verbose));
         });
 
-    IEnumerable<string> XRefMapFiles
-        => GlobFiles(NuGetPackageResolver.GetLocalInstalledPackageDirectory("msdn.4.5.2"), "content/*.zip")
-            .Concat(GlobFiles(GenerationDirectory, "specs/xrefmap.yml"));
-
     Target BuildSite => _ => _
         .DependsOn(Metadata, CustomToc, Disclaimer)
         .Executes(() =>
         {
             DocFxBuild(DocFxFile, s => s
-                .SetLogLevel(DocFxLogLevel.Warning)
-                .SetXRefMaps(XRefMapFiles)
+                .SetLogLevel(DocFxLogLevel.Verbose)
                 .SetServe(IsLocalBuild));
         });
 

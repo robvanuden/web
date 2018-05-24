@@ -23,7 +23,7 @@ static class Disclaimer
                 .ToList();
 
         var relevantSymbols = assemblies.NotNull()
-            .SelectMany(x => x.MainModule.ExportedTypes)
+            .SelectMany(x => x.MainModule.Types)
             .Where(x => x.Namespace != null && x.Namespace.StartsWith("Nuke"))
             .Distinct(x => x.FullName);
 
