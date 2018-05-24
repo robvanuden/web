@@ -25,6 +25,7 @@ static class CustomDocFx
             .ForEach(metadata.Add);
 
         json["metadata"] = metadata;
+        json["build"]["overwrite"][key: 0]["src"] = GetRootRelativePath(generationDirectory).Replace(oldChar: '\\', newChar: '/');
         File.WriteAllText(docFxFile, json.ToString(Formatting.Indented));
     }
 
