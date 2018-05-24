@@ -45,7 +45,9 @@ class CustomTocWriter : IDisposable
     {
         var lastAssemblyNameSegment = assemblyName.Split('.').Last();
         var name = removeNamespaceFromName ? type.Name.Replace(lastAssemblyNameSegment, string.Empty) : type.Name;
-        return name == "Tasks" ? type.Name : name;
+        name = name == "Tasks" ? type.Name : name;
+        if (name.EndsWith("Tasks")) return name.Substring(startIndex: 0, length: name.Length - 5);
+        return name.EndsWith("Attribute") ? name.Substring(startIndex: 0, length: name.Length - 9) : name;
     }
 
     private static bool IsEntryType(MemberReference typeDefinition, IReadOnlyDictionary<string, string> iconClasses)
@@ -67,11 +69,6 @@ class CustomTocWriter : IDisposable
     private static bool IsServerType(ICustomAttributeProvider typeDefinition)
     {
         return typeDefinition.CustomAttributes.Any(x => x.AttributeType.FullName == typeof(BuildServerAttribute).FullName);
-    }
-
-    private static bool IsCommonType(AssemblyDefinition assembly)
-    {
-        return assembly.FullName == typeof(NukeBuild).Assembly.GetName().FullName;
     }
 
     private static bool IsInjectionAttribute(MemberReference typeSymbol, IReadOnlyDictionary<string, string> iconClasses)
@@ -102,34 +99,36 @@ class CustomTocWriter : IDisposable
     private void WriteCustomTocs()
     {
         var relevantTypeDefinitons = GetRelevantTypeDefinitons();
-        var addonTocs = CreateAddonTocs(relevantTypeDefinitons[Kind.Addons]);
-        var commonToc = CreateCommonToc(relevantTypeDefinitons, addonTocs);
+        var taskTocs = CreateTaskTocs(relevantTypeDefinitons[Kind.Tasks]);
+        var commonToc = CreateCommonToc(relevantTypeDefinitons, taskTocs);
 
         var serializer = new SerializerBuilder().WithNamingConvention(new CamelCaseNamingConvention()).Build();
 
         Info("Writing toc.yml...");
         WriteAllText(_apiDirectory / "toc.yml", serializer.Serialize(commonToc));
-        addonTocs
-            .Where(x => x.Count() > 1)
+        taskTocs
+            .Where(x => x.Count() > 1 && x.Key != "Nuke.Common")
             .ForEachLazy(x => Info($"Writing {x.Key}/toc.yml..."))
             .ForEach(x => WriteAllText(_apiDirectory / x.Key / "toc.yml", serializer.Serialize(x)));
     }
 
     private IEnumerable<Item> CreateCommonToc(
         ILookup<Kind, TypeInfo> typeDefinitons,
-        ILookup<string, Item> addonTocs)
+        ILookup<string, Item> taskTocs)
     {
         return typeDefinitons
-            .Where(x => x.Key != Kind.Addons)
+            .Where(x => x.Key != Kind.Tasks)
             .SelectMany(x => x.AsEnumerable(), (grouping, typeInfo) => new { TypeInfo = typeInfo, Kind = grouping.Key })
-            .Where(x => x.TypeInfo.Assembly.Name.Name == "Nuke.Common")
+            //.Where(x => x.TypeInfo.Assembly.Name.Name == "Nuke.Common")
             .GroupBy(x => x.Kind, x => x.TypeInfo)
+            .OrderBy(x => (int) x.Key)
             .SelectMany(x => new Item { Separator = x.Key.ToString() }.Concat(CreateItems(x.Select(y => y.Type),
-                x.First().Assembly.Name.Name,
-                includeHref: true
-            )))
-            .Concat(new Item { Separator = Kind.Addons.ToString() })
-            .Concat(addonTocs.Select(CreateAddonItem))
+                    x.First().Assembly.Name.Name,
+                    includeHref: true
+                ))
+            )
+            .Concat(new Item { Separator = Kind.Tasks.ToString() })
+            .Concat(taskTocs.SelectMany(CreateTaskItem).OrderBy(x => x.Name))
             .ToList();
     }
 
@@ -139,35 +138,45 @@ class CustomTocWriter : IDisposable
             .SelectMany(x => x.MainModule.Types, (assembly, type) => new TypeInfo(type, assembly))
             .Where(x => !x.Type.Namespace.StartsWith("Nuke.Core"))
             .Distinct(x => x.Type.FullName)
-            .Select(x => new { TypeInfo = x, Kind = GetKind(x.Type, x.Assembly) })
+            .Select(x => new { TypeInfo = x, Kind = GetKind(x.Type) })
             .Where(x => x.Kind != Kind.None)
             .ForEachLazy(x => Console.WriteLine($"Found '{x.TypeInfo.Type.FullName}' ({x.Kind})."))
             .ToLookup(x => x.Kind, x => x.TypeInfo);
     }
 
-    private Item CreateAddonItem(IGrouping<string, Item> grouping)
+    private Item[] CreateTaskItem(IGrouping<string, Item> grouping)
     {
         var isGroup = grouping.Count() > 1;
         var firstItem = grouping.First();
         var firstItemHref = $"{grouping.Key}/{grouping.First().Uid}.yml";
-        return new Item
+
+        if (isGroup && grouping.Key == "Nuke.Common")
+        {
+            grouping.ForEach(x => x.Href = $"{grouping.Key}/{x.Uid}.yml");
+            return grouping.ToArray();
+        }
+
+        return new[]
                {
-                   Uid = isGroup ? grouping.Key : firstItem.Uid,
-                   Href = isGroup ? $"{grouping.Key}/toc.yml" : firstItemHref,
-                   TopicUid = isGroup ? firstItem.Uid : null,
-                   Icon = GetIconClassText(firstItem.Uid),
-                   Name = grouping.Key.Split('.').Last()
+                   new Item
+                   {
+                       Uid = isGroup ? grouping.Key : firstItem.Uid,
+                       Href = isGroup ? $"{grouping.Key}/toc.yml" : firstItemHref,
+                       TopicUid = isGroup ? firstItem.Uid : null,
+                       Icon = GetIconClassText(firstItem.Uid),
+                       Name = grouping.Key.Split('.').Last()
+                   }
                };
     }
 
-    private ILookup<string, Item> CreateAddonTocs(IEnumerable<TypeInfo> typeInfos)
+    private ILookup<string, Item> CreateTaskTocs(IEnumerable<TypeInfo> typeInfos)
     {
         return typeInfos
             .GroupBy(x => x.Assembly.Name.Name,
                 x => x.Type, (name, type) => new
                                              {
                                                  AssemblyName = name,
-                                                 Items = CreateItems(type, name, includeIcon: false, removeNamespaceFromName: true)
+                                                 Items = CreateItems(type, name, removeNamespaceFromName: true)
                                              })
             .SelectMany(x => x.Items, (x, item) => new { x.AssemblyName, Item = item })
             .ToLookup(x => x.AssemblyName, x => x.Item);
@@ -176,18 +185,17 @@ class CustomTocWriter : IDisposable
     private IEnumerable<Item> CreateItems(
         IEnumerable<TypeDefinition> definitions,
         string assemblyName,
-        bool includeIcon = true,
         bool removeNamespaceFromName = false,
         bool includeHref = false)
     {
         return definitions.Select(type => new { Name = GetName(type, assemblyName, removeNamespaceFromName), Type = type })
-            .OrderBy(x => x.Name == x.Type.Namespace.Split('.').Last() + "Tasks" ? $"!{x.Name}" : x.Name)
+            .OrderBy(x => x.Name == x.Type.Namespace.Split('.').Last() ? $"!{x.Name}" : x.Name)
             .Select(x => new Item
                          {
                              Uid = x.Type.FullName,
                              Name = x.Name,
                              Href = $"{(includeHref ? assemblyName + '/' : string.Empty)}{x.Type.FullName}.yml",
-                             Icon = includeIcon ? GetIconClassText(x.Type) : null
+                             Icon = GetIconClassText(x.Type)
                          });
     }
 
@@ -202,7 +210,7 @@ class CustomTocWriter : IDisposable
         return _iconClasses.TryGetValue(identifier, out var iconClassText) ? iconClassText : "power-cord2";
     }
 
-    private Kind GetKind(TypeDefinition typeDefinition, AssemblyDefinition assembly)
+    private Kind GetKind(TypeDefinition typeDefinition)
     {
         if (IsEntryType(typeDefinition, _iconClasses))
             return Kind.Entry;
@@ -211,27 +219,22 @@ class CustomTocWriter : IDisposable
         if (IsInjectionAttribute(typeDefinition, _iconClasses))
             return Kind.Injection;
         if (typeDefinition.Name.EndsWith("Tasks"))
-        {
-            return IsCommonType(assembly)
-                ? Kind.Common
-                : Kind.Addons;
-        }
+            return Kind.Tasks;
 
         return Kind.None;
     }
 
     private enum Kind
     {
-        None,
-        Entry,
-        Servers,
-        Injection,
-        Common,
-        Addons
+        None = 0,
+        Entry = 1,
+        Injection = 2,
+        Servers = 3,
+        Tasks = 4
     }
 
     [UsedImplicitly(ImplicitUseKindFlags.Access, ImplicitUseTargetFlags.WithMembers)]
-    private struct Item
+    private class Item
     {
         public string Uid { get; set; }
         public string Name { get; set; }
