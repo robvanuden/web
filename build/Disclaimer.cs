@@ -45,7 +45,7 @@ static class Disclaimer
     {
         const string org = "nuke-build";
 
-        var owner = apiProject.PackageId.Substring(startIndex: 0, length: apiProject.PackageId.IndexOf(value: '.') - 1);
+        var owner = apiProject.RepositoryUrl.Replace("https://github.com/", string.Empty).Split('/').First();
         if (owner == org)
             return builder;
 
