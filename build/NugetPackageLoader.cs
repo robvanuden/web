@@ -22,9 +22,9 @@ using Nuke.Common.Utilities.Collections;
 
 class NugetPackageLoader
 {
-    public static void InstallPackages(IEnumerable<string> packageIds, string packageDirectory, bool includePreReleases = false)
+    public static void InstallPackages(IEnumerable<string> packageIds, string packageDirectory)
     {
-        var packageLoader = new NugetPackageLoader(packageDirectory, includePreReleases);
+        var packageLoader = new NugetPackageLoader(packageDirectory);
         packageIds.ForEach(packageLoader.InstallPackage);
     }
 
@@ -32,7 +32,8 @@ class NugetPackageLoader
     private readonly FolderNuGetProject _project;
     private readonly INuGetProjectContext _projectContext;
     private readonly ResolutionContext _resolutionContext;
-    private readonly IReadOnlyCollection<SourceRepository> _sourceRepositories;
+
+    private readonly SourceRepository _sourceRepository;
 
     private NugetPackageLoader(string packagePath, bool includePreReleases = false)
     {
@@ -40,7 +41,7 @@ class NugetPackageLoader
 
         _project = new FolderNuGetProject(packagePath, new PackagePathResolver(packagePath, useSideBySidePaths: false));
         _projectContext = new ProjectContext();
-        _sourceRepositories = new[] { new SourceRepository(new PackageSource("https://api.nuget.org/v3/index.json"), resourceProviders) };
+        _sourceRepository = new SourceRepository(new PackageSource("https://api.nuget.org/v3/index.json"), resourceProviders);
         _resolutionContext = new ResolutionContext(DependencyBehavior.Ignore,
             includePreReleases,
             includeUnlisted: false,
@@ -58,9 +59,8 @@ class NugetPackageLoader
     private void InstallPackage(string packageId)
     {
         _packageManager
-            .InstallPackageAsync(_project, packageId, _resolutionContext, _projectContext, _sourceRepositories.First(),
-                _sourceRepositories.Skip(count: 1),
-                CancellationToken.None)
+            .InstallPackageAsync(_project, packageId, _resolutionContext, _projectContext, _sourceRepository, secondarySources: null,
+                token: CancellationToken.None)
             .GetAwaiter()
             .GetResult();
     }

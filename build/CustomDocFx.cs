@@ -14,22 +14,21 @@ using static Nuke.Common.Logger;
 
 static class CustomDocFx
 {
-    public static void WriteCustomDotFx(string docFxFile, string docFxTemplateFile, string generationDirectory, AbsolutePath apiDirectory)
+    public static void WriteCustomDocFx(string docFxFile, string docFxTemplateFile, string generationDirectory, AbsolutePath apiDirectory)
     {
-        var json = JToken.Parse(ReadAllText(docFxTemplateFile));
+        var json = JObject.Parse(ReadAllText(docFxTemplateFile));
 
         var metadata = new JArray();
         Directory.GetDirectories(generationDirectory)
             .ForEachLazy(x => Info($"Processing {x}..."))
-            .Select(directory => CrateMetadataItem(directory, apiDirectory))
+            .Select(directory => CreateMetadataItem(directory, apiDirectory))
             .ForEach(metadata.Add);
 
         json["metadata"] = metadata;
-        json["build"]["overwrite"][key: 0]["src"] = GetRootRelativePath(generationDirectory).Replace(oldChar: '\\', newChar: '/');
-        File.WriteAllText(docFxFile, json.ToString(Formatting.Indented));
+        WriteAllText(docFxFile, json.ToString(Formatting.Indented));
     }
 
-    static JObject CrateMetadataItem(string directory, AbsolutePath apiDirectory)
+    static JObject CreateMetadataItem(string directory, AbsolutePath apiDirectory)
     {
         var framework = GetFrameworkToAnalyze(directory);
         var name = new DirectoryInfo(directory).Name;
@@ -52,12 +51,9 @@ static class CustomDocFx
 
     static string GetFrameworkToAnalyze(string directory)
     {
-        var frameworkFolders = Directory.GetDirectories(Combine(directory, "lib"))
-            .OrderBy(x => x)
-            .Select(x => new DirectoryInfo(x))
-            .ToList();
-        var frameworkFolder = frameworkFolders.LastOrDefault(x => !x.Name.StartsWith("netcore") && !x.Name.StartsWith("netstandard"))
-                              ?? frameworkFolders.Last();
-        return frameworkFolder.Name;
+        return Directory.GetDirectories(Combine(directory, "lib"))
+            .Select(x => new DirectoryInfo(x).Name)
+            .OrderBy(x => x.StartsWith("netcore") || x.StartsWith("netstandard") ? $"!{x}" : x)
+            .Last();
     }
 }

@@ -10,7 +10,6 @@ using System.Text;
 using Mono.Cecil;
 using Nuke.Common;
 using Nuke.Common.Utilities.Collections;
-using static Nuke.Common.Logger;
 
 static class Disclaimer
 {
@@ -18,7 +17,6 @@ static class Disclaimer
     {
         var assemblies =
             dllFiles
-                .ForEachLazy(x => Info($"Loading {x}"))
                 .Select(AssemblyDefinition.ReadAssembly)
                 .ToList();
 
@@ -26,7 +24,6 @@ static class Disclaimer
             .SelectMany(x => x.MainModule.Types)
             .Where(x => x.Namespace != null && x.Namespace.StartsWith("Nuke"))
             .Distinct(x => x.FullName);
-
         File.WriteAllText(disclaimerFile,
             relevantSymbols.Aggregate(new StringBuilder(),
                     (sb, x) => sb

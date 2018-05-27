@@ -6,3 +6,5 @@
   repositoryUrl: https://github.com/nuke-build/azure
 - packageId: Nuke.Docker
   repositoryUrl: https://github.com/nuke-build/docker
+- packageId: Nuke.NSwag
+  repositoryUrl: https://github.com/nuke-build/nswag

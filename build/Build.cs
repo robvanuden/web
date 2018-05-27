@@ -10,7 +10,6 @@ using System.Net;
 using FluentFTP;
 using Nuke.Common.Tools.DocFx;
 using Nuke.Common;
-using Nuke.Common.Tooling;
 using Nuke.Common.Utilities.Collections;
 using static CustomTocWriter;
 using static Disclaimer;
@@ -22,7 +21,6 @@ using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.EnvironmentInfo;
 using static Nuke.Common.IO.PathConstruction;
 using static Nuke.Common.Logger;
-
 
 class Build : NukeBuild
 {
@@ -44,6 +42,8 @@ class Build : NukeBuild
         .OnlyWhen(() => true)
         .Executes(() =>
         {
+            DeleteDirectories(GlobDirectories(SourceDirectory, "*/bin", "*/obj"));
+            DeleteDirectory(SolutionDirectory / "obj");
             DeleteDirectory(ApiDirectory);
             DeleteDirectory(GenerationDirectory);
             EnsureCleanDirectory(OutputDirectory);
@@ -60,25 +60,19 @@ class Build : NukeBuild
         .DependsOn(DownloadPackages)
         .Executes(() =>
         {
-            WriteCustomDotFx(DocFxFile,BuildProjectDirectory / "docfx.template.json", GenerationDirectory, ApiDirectory);
-        });
-
-    Target CustomToc => _ => _
-        .DependsOn(DownloadPackages, Metadata)
-        .Executes(() =>
-        {
-            GlobFiles(ApiDirectory, "**/toc.yml").ForEach(File.Delete);
-            WriteCustomTocs(ApiDirectory, GlobFiles(GenerationDirectory, "**/lib/*/*.dll"));
+            WriteCustomDocFx(DocFxFile, BuildProjectDirectory / "docfx.template.json", GenerationDirectory, ApiDirectory);
         });
 
     Target Disclaimer => _ => _
         .DependsOn(DownloadPackages)
         .Executes(() =>
         {
+            var disclaimerDirectory = SourceDirectory / "disclaimers";
+            Directory.CreateDirectory(disclaimerDirectory);
             Projects.Where(x => x.IsExternalRepository)
                 .ForEachLazy(x => Info($"Writing disclaimer for {x.PackageId}..."))
                 .ForEach(x => WriteDisclaimer(x,
-                    GenerationDirectory / x.PackageId / $"{x.PackageId}.disclaimer.md",
+                    disclaimerDirectory / $"{x.PackageId}.disclaimer.md",
                     GlobFiles(GenerationDirectory / x.PackageId, "lib/*/*.dll")));
         });
 
@@ -94,6 +88,14 @@ class Build : NukeBuild
             }
 
             DocFxMetadata(DocFxFile, s => s.SetLogLevel(DocFxLogLevel.Verbose));
+        });
+
+    Target CustomToc => _ => _
+        .DependsOn(DownloadPackages, Metadata)
+        .Executes(() =>
+        {
+            GlobFiles(ApiDirectory, "**/toc.yml").ForEach(File.Delete);
+            WriteCustomTocs(ApiDirectory, GlobFiles(GenerationDirectory, "**/lib/*/*.dll"));
         });
 
     Target BuildSite => _ => _

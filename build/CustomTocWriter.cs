@@ -9,13 +9,12 @@ using JetBrains.Annotations;
 using Mono.Cecil;
 using Nuke.Common;
 using Nuke.Common.BuildServers;
+using Nuke.Common.Execution;
 using Nuke.Common.IO;
 using Nuke.Common.Tooling;
 using Nuke.Common.Utilities.Collections;
-using YamlDotNet.Serialization;
-using YamlDotNet.Serialization.NamingConventions;
 using static Nuke.Common.Logger;
-using static Nuke.Common.IO.TextTasks;
+using static Nuke.Common.IO.SerializationTasks;
 using static Nuke.Common.IO.PathConstruction;
 
 // ReSharper disable ArrangeMethodOrOperatorBody
@@ -31,55 +30,13 @@ class CustomTocWriter : IDisposable
         }
     }
 
-    private static Dictionary<string, string> GetIconClasses(IEnumerable<AssemblyDefinition> assemblies)
-    {
-        return assemblies
-            .SelectMany(x => x.CustomAttributes)
-            .Where(x => x.AttributeType.FullName.EndsWith("IconClassAttribute"))
-            .Distinct(x => ((TypeDefinition) x.ConstructorArguments[index: 0].Value).FullName)
-            .ToDictionary(x => ((TypeDefinition) x.ConstructorArguments[index: 0].Value).FullName,
-                x => (string) x.ConstructorArguments[index: 1].Value);
-    }
-
-    private static string GetName(IMemberDefinition type, string assemblyName, bool removeNamespaceFromName = false)
-    {
-        var lastAssemblyNameSegment = assemblyName.Split('.').Last();
-        var name = removeNamespaceFromName ? type.Name.Replace(lastAssemblyNameSegment, string.Empty) : type.Name;
-        name = name == "Tasks" ? type.Name : name;
-        name = name == "Attribute" ? type.Name : name;
-        if (name.EndsWith("Tasks")) return name.Substring(startIndex: 0, length: name.Length - 5);
-        return name.EndsWith("Attribute") ? name.Substring(startIndex: 0, length: name.Length - 9) : name;
-    }
-
-    private static bool IsEntryType(MemberReference typeDefinition, IReadOnlyDictionary<string, string> iconClasses)
-    {
-        if (!iconClasses.ContainsKey(typeDefinition.FullName.NotNull()))
-            return false;
-        return new[]
-               {
-                   typeof(ControlFlow),
-                   typeof(EnvironmentInfo),
-                   typeof(Logger),
-                   typeof(NukeBuild),
-                   typeof(PathConstruction),
-                   typeof(ProcessTasks),
-                   typeof(ToolPathResolver)
-               }.Any(x => x.FullName == typeDefinition.FullName);
-    }
-
-    private static bool IsServerType(ICustomAttributeProvider typeDefinition)
-    {
-        return typeDefinition.CustomAttributes.Any(x => x.AttributeType.FullName == typeof(BuildServerAttribute).FullName);
-    }
-
-    private static bool IsInjectionAttribute(MemberReference typeSymbol, IReadOnlyDictionary<string, string> iconClasses)
-    {
-        return iconClasses.ContainsKey(typeSymbol.FullName.NotNull()) && typeSymbol.Name.EndsWith("Attribute");
-    }
-
     readonly IReadOnlyDictionary<string, string> _iconClasses;
     readonly IReadOnlyCollection<AssemblyDefinition> _assemblies;
     readonly AbsolutePath _apiDirectory;
+    readonly string _commonNamespace = typeof(NukeBuild).Namespace;
+#pragma warning disable 618
+    readonly string _coreNamespace = typeof(Nuke.Core.NukeBuild).Namespace;
+#pragma warning restore 618
 
     CustomTocWriter(AbsolutePath apiDirectory, IEnumerable<string> dllFiles)
     {
@@ -97,61 +54,107 @@ class CustomTocWriter : IDisposable
         _assemblies?.ForEach(x => x.Dispose());
     }
 
+    private Dictionary<string, string> GetIconClasses(IEnumerable<AssemblyDefinition> assemblies)
+    {
+        string getIconClassType(CustomAttribute attribute) => ((TypeDefinition) attribute.ConstructorArguments[index: 0].Value).FullName;
+
+        return assemblies
+            .SelectMany(x => x.CustomAttributes)
+            .Where(x => x.AttributeType.FullName == typeof(IconClassAttribute).FullName)
+            .Distinct(getIconClassType)
+            .ToDictionary(getIconClassType, x => (string) x.ConstructorArguments[index: 1].Value);
+    }
+
+    private string GetName(IMemberDefinition type, string assemblyName, bool removeAssemblyFromName = false)
+    {
+        const string tasksSuffix = "Tasks";
+        const string attributeSuffix = "Attribute";
+
+        var lastAssemblyNameSegment = assemblyName.Split('.').Last();
+        var name = removeAssemblyFromName ? type.Name.Replace(lastAssemblyNameSegment, string.Empty) : type.Name;
+
+        name = name == tasksSuffix || name == attributeSuffix ? type.Name : name;
+
+        if (name.EndsWith(tasksSuffix))
+            return name.Substring(startIndex: 0, length: name.Length - tasksSuffix.Length);
+        if (name.EndsWith(attributeSuffix))
+            return name.Substring(startIndex: 0, length: name.Length - attributeSuffix.Length);
+
+        return name;
+    }
+
+    private bool IsEntryType(MemberReference typeDefinition)
+    {
+        if (!_iconClasses.ContainsKey(typeDefinition.FullName.NotNull()))
+            return false;
+
+        return new[]
+               {
+                   typeof(ControlFlow),
+                   typeof(EnvironmentInfo),
+                   typeof(Logger),
+                   typeof(NukeBuild),
+                   typeof(PathConstruction),
+                   typeof(ProcessTasks),
+                   typeof(ToolPathResolver)
+               }.Any(x => x.FullName == typeDefinition.FullName);
+    }
+
+    private bool IsServerType(ICustomAttributeProvider typeDefinition)
+    {
+        return typeDefinition.CustomAttributes.Any(x => x.AttributeType.FullName == typeof(BuildServerAttribute).FullName);
+    }
+
+    private bool IsInjectionAttribute(MemberReference typeSymbol)
+    {
+        return _iconClasses.ContainsKey(typeSymbol.FullName.NotNull()) && typeSymbol.Name.EndsWith("Attribute");
+    }
+
     private void WriteCustomTocs()
     {
         var relevantTypeDefinitons = GetRelevantTypeDefinitons();
         var taskTocs = CreateTaskTocs(relevantTypeDefinitons[Kind.Tasks]);
-        var commonToc = CreateCommonToc(relevantTypeDefinitons, taskTocs);
-
-        var serializer = new SerializerBuilder().WithNamingConvention(new CamelCaseNamingConvention()).Build();
+        var mainToc = CreateMainToc(relevantTypeDefinitons, taskTocs);
 
         Info("Writing toc.yml...");
-        WriteAllText(_apiDirectory / "toc.yml", serializer.Serialize(commonToc));
+        YamlSerializeToFile(mainToc, _apiDirectory / "toc.yml");
         taskTocs
-            .Where(x => x.Count() > 1 && x.Key != "Nuke.Common")
+            .Where(x => x.Count() > 1 && x.Key != _commonNamespace)
             .ForEachLazy(x => Info($"Writing {x.Key}/toc.yml..."))
-            .ForEach(x => WriteAllText(_apiDirectory / x.Key / "toc.yml", serializer.Serialize(x)));
+            .ForEach(x => YamlSerializeToFile(x, _apiDirectory / x.Key / "toc.yml"));
     }
 
-    private IEnumerable<Item> CreateCommonToc(
+    private IEnumerable<Item> CreateMainToc(
         ILookup<Kind, TypeInfo> typeDefinitons,
         ILookup<string, Item> taskTocs)
     {
         return typeDefinitons
-            //.Where(x => x.Key != Kind.Tasks)
             .SelectMany(x => x.AsEnumerable(), (grouping, typeInfo) => new { TypeInfo = typeInfo, Kind = grouping.Key })
-            //.Where(x => x.TypeInfo.Assembly.Name.Name == "Nuke.Common")
             .GroupBy(x => x.Kind, x => x.TypeInfo)
             .OrderBy(x => (int) x.Key)
-            .SelectMany(x => CreateCommonTocCategory(x.Key, x.AsEnumerable(), taskTocs));
+            .SelectMany(x => CreateCategoryToc(x.Key, x.AsEnumerable(), taskTocs));
     }
 
-    private IEnumerable<Item> CreateCommonTocCategory(Kind kind, IEnumerable<TypeInfo> typeInfos, ILookup<string,Item> taskTocs)
+    private IEnumerable<Item> CreateCategoryToc(Kind kind, IEnumerable<TypeInfo> typeInfos, ILookup<string, Item> taskTocs)
     {
-        var category = new List<Item>();
-        category.Add(new Item { Separator = kind.ToString() });
-        category.AddRange(CreateItems(kind, typeInfos,taskTocs).OrderBy(x => x.Name));
-        return category;
+        return new[] { new Item { Separator = kind.ToString() } }
+            .Concat(CreateItems(kind, typeInfos, taskTocs).OrderBy(x => x.Name));
     }
-
-
 
     private IEnumerable<Item> CreateItems(Kind kind, IEnumerable<TypeInfo> typeInfos, ILookup<string, Item> taskTocs)
     {
-        
-        if (kind == Kind.Injection) return CreateInjectionItems(typeInfos, false);
+        if (kind == Kind.Injection) return CreateInjectionItems(typeInfos);
         if (kind == Kind.Tasks) return taskTocs.SelectMany(CreateTaskItem).OrderBy(x => x.Name);
         return typeInfos
             .GroupBy(x => x.Assembly)
-            .SelectMany(x => CreateItems(x.AsEnumerable().Select(y => y.Type), x.Key.Name.Name, true, true));
-
+            .SelectMany(x => CreateItems(x.AsEnumerable().Select(y => y.Type), x.Key.Name.Name, removeAssemblyFromName: true, includeHref: true));
     }
 
     private ILookup<Kind, TypeInfo> GetRelevantTypeDefinitons()
     {
         return _assemblies
             .SelectMany(x => x.MainModule.Types, (assembly, type) => new TypeInfo(type, assembly))
-            .Where(x => !x.Type.Namespace.StartsWith("Nuke.Core"))
+            .Where(x => !x.Type.Namespace.StartsWith(_coreNamespace))
             .Distinct(x => x.Type.FullName)
             .Select(x => new { TypeInfo = x, Kind = GetKind(x.Type) })
             .Where(x => x.Kind != Kind.None)
@@ -165,7 +168,7 @@ class CustomTocWriter : IDisposable
         var firstItem = grouping.First();
         var firstItemHref = $"{grouping.Key}/{grouping.First().Uid}.yml";
 
-        if (isGroup && grouping.Key == "Nuke.Common")
+        if (isGroup && grouping.Key == _commonNamespace)
         {
             grouping.ForEach(x => x.Href = $"{grouping.Key}/{x.Uid}.yml");
             return grouping.ToArray();
@@ -182,10 +185,10 @@ class CustomTocWriter : IDisposable
                        Name = grouping.Key.Split('.').Last()
                    }
                };
-    } 
+    }
 
-    private IEnumerable<Item> CreateInjectionItems(IEnumerable<TypeInfo> typeInfos,
-        bool removeNamespaceFromName = false)
+    private IEnumerable<Item> CreateInjectionItems(
+        IEnumerable<TypeInfo> typeInfos)
     {
         var typeInfoArray = typeInfos as TypeInfo[] ?? typeInfos.ToArray();
         var definitionGroups = typeInfoArray
@@ -195,40 +198,40 @@ class CustomTocWriter : IDisposable
         var items = new List<Item>();
         foreach (var definitionGroup in definitionGroups)
         {
-            if (definitionGroup.Key.StartsWith("Nuke.Common"))
+            if (definitionGroup.Key.StartsWith(_commonNamespace))
             {
-                items.AddRange(CreateItems(definitionGroup.Select(x => x.Type),definitionGroup.First().Assembly.Name.Name,false,true));
+                items.AddRange(CreateItems(definitionGroup.Select(x => x.Type), definitionGroup.First().Assembly.Name.Name,
+                    removeAssemblyFromName: false, includeHref: true));
                 continue;
             }
+
             var isGroup = definitionGroup.Count() > 1;
             var firstType = definitionGroup.First();
             var assemblyName = firstType.Assembly.Name.Name;
             var item = new Item
                        {
-                           //Uid = firstType.FullName,
-                           Name = isGroup ? definitionGroup.Key.Split('.').Last() : GetName(firstType.Type, assemblyName, removeNamespaceFromName),
+                           Name = isGroup ? definitionGroup.Key.Split('.').Last() : GetName(firstType.Type, assemblyName),
                            Href = $"{assemblyName}/{firstType.Type.FullName}.yml",
                            Icon = GetIconClassText(firstType.Type),
                            TopicUid = isGroup ? firstType.Type.FullName : null,
-                           Items = isGroup ? CreateItems(definitionGroup.Select(x => x.Type), assemblyName, false, true).ToArray() : null
+                           Items = isGroup
+                               ? CreateItems(definitionGroup.Select(x => x.Type), assemblyName, removeAssemblyFromName: false, includeHref: true)
+                                   .ToArray()
+                               : null
                        };
             items.Add(item);
         }
 
         return items;
-
     }
 
-
-private IEnumerable<Item> CreateItems(
+    private IEnumerable<Item> CreateItems(
         IEnumerable<TypeDefinition> definitions,
         string assemblyName,
-        bool removeNamespaceFromName = false,
+        bool removeAssemblyFromName = false,
         bool includeHref = false)
     {
-        
-
-        return definitions.Select(type => new { Name = GetName(type, assemblyName, removeNamespaceFromName), Type = type })
+        return definitions.Select(type => new { Name = GetName(type, assemblyName, removeAssemblyFromName), Type = type })
             .OrderBy(x => x.Name == x.Type.Namespace.Split('.').Last() ? $"!{x.Name}" : x.Name)
             .Select(x => new Item
                          {
@@ -246,7 +249,7 @@ private IEnumerable<Item> CreateItems(
                 x => x.Type, (name, type) => new
                                              {
                                                  AssemblyName = name,
-                                                 Items = CreateItems(type, name, removeNamespaceFromName: true)
+                                                 Items = CreateItems(type, name, removeAssemblyFromName: true)
                                              })
             .SelectMany(x => x.Items, (x, item) => new { x.AssemblyName, Item = item })
             .ToLookup(x => x.AssemblyName, x => x.Item);
@@ -265,13 +268,13 @@ private IEnumerable<Item> CreateItems(
 
     private Kind GetKind(TypeDefinition typeDefinition)
     {
-        if (IsEntryType(typeDefinition, _iconClasses))
+        if (IsEntryType(typeDefinition))
             return Kind.Entry;
         if (IsServerType(typeDefinition))
             return Kind.Servers;
-        if (IsInjectionAttribute(typeDefinition, _iconClasses))
+        if (IsInjectionAttribute(typeDefinition))
             return Kind.Injection;
-        if (typeDefinition.Name.EndsWith("Tasks"))
+        if (typeDefinition.Name.EndsWith("Tasks") && typeDefinition.BaseType?.FullName != typeof(Enumeration).FullName)
             return Kind.Tasks;
 
         return Kind.None;
@@ -310,5 +313,3 @@ private IEnumerable<Item> CreateItems(
         public AssemblyDefinition Assembly { get; }
     }
 }
-
-
