@@ -19,6 +19,7 @@ using static Nuke.Common.IO.SerializationTasks;
 using static Nuke.Common.Tools.DocFx.DocFxTasks;
 using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.EnvironmentInfo;
+using static Nuke.Common.IO.FtpTasks;
 using static Nuke.Common.IO.PathConstruction;
 using static Nuke.Common.Logger;
 
@@ -112,6 +113,10 @@ class Build : NukeBuild
         .Requires(() => FtpUsername, () => FtpPassword, () => FtpServer)
         .Executes(() =>
         {
+            FtpCredentials = new NetworkCredential(FtpUsername, FtpPassword);
+            FtpUploadDirectoryRecursively(SiteDirectory, FtpServer);
+
+            return;
             var client = new FtpClient(FtpServer, new NetworkCredential(FtpUsername, FtpPassword));
             client.Connect();
 
