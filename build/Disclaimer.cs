@@ -62,7 +62,7 @@ static class Disclaimer
             .AppendLine("  <span class=\"icon icon-info alert-icon\"></span>")
             .AppendLine($"  This API is part of the <a href=\"https://nuget.org/packages/{packageId}\"><strong>{packageId}</strong></a> package.")
             .AppendLine(
-                $"  The code is available at <a href=\"{packageId}\"><strong>{apiProject.RepositoryUrl}</strong></a>.")
+                $"  The code is available at <a href=\"{apiProject.RepositoryUrl}\"><strong>{apiProject.RepositoryUrl}</strong></a>.")
             .AppendLine("</div>");
     }
 }
