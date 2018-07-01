@@ -64,7 +64,6 @@ build [targets] [-configuration <value>] [-skip [targets]] [...]
 - `target`: defines the target(s) to be executed; multiple targets are separated by plus sign (i.e., `compile+pack`); if no target is defined, the _default_ will be executed
 - `-configuration <value>`: defines the configuration to build. Default is _debug_
 - `-verbosity <value>`: supported values are `quiet`, `minimal`, `normal` and `verbose`
-- `-noinit`: will only compile and execute the build project for improved debugging
 - `-skip [targets]`: if no target is defined, only the explicit stated targets will be executed; multiple targets are separated by plus sign (i.e, `-skip clean+push`)
 - `-graph`: will generate a HTML view of target dependencies
 - `-help`: will show further information about available targets and parameters
