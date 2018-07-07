@@ -38,9 +38,8 @@ class Build : NukeBuild
     AbsolutePath ApiDirectory => SourceDirectory / "api";
 
     IEnumerable<ApiProject> Projects => YamlDeserializeFromFile<List<ApiProject>>(RootDirectory / "projects.yml");
-
+    
     Target Clean => _ => _
-        .OnlyWhen(() => true)
         .Executes(() =>
         {
             DeleteDirectories(GlobDirectories(SourceDirectory, "*/bin", "*/obj"));
