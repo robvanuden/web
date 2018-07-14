@@ -44,8 +44,8 @@ class Build : NukeBuild
         {
             DeleteDirectories(GlobDirectories(SourceDirectory, "*/bin", "*/obj"));
             DeleteDirectory(SolutionDirectory / "obj");
-            DeleteDirectory(ApiDirectory);
-            DeleteDirectory(GenerationDirectory);
+            EnsureCleanDirectory(ApiDirectory);
+            EnsureCleanDirectory(GenerationDirectory);
             EnsureCleanDirectory(OutputDirectory);
         });
 
@@ -73,7 +73,7 @@ class Build : NukeBuild
                 .ForEachLazy(x => Info($"Writing disclaimer for {x.PackageId}..."))
                 .ForEach(x => WriteDisclaimer(x,
                     disclaimerDirectory / $"{x.PackageId}.disclaimer.md",
-                    GlobFiles(GenerationDirectory / x.PackageId, "lib/*/*.dll")));
+                    GlobFiles(GenerationDirectory / x.PackageId, "lib/net4*/*.dll")));
         });
 
     Target Metadata => _ => _
@@ -95,7 +95,7 @@ class Build : NukeBuild
         .Executes(() =>
         {
             GlobFiles(ApiDirectory, "**/toc.yml").ForEach(File.Delete);
-            WriteCustomTocs(ApiDirectory, GlobFiles(GenerationDirectory, "**/lib/*/*.dll"));
+            WriteCustomTocs(ApiDirectory, GlobFiles(GenerationDirectory, "**/lib/net4*/*.dll"));
         });
 
     Target BuildSite => _ => _
