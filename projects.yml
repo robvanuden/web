@@ -1,2 +1,6 @@
 - packageId: Nuke.Common
   repositoryUrl: https://github.com/nuke-build/nuke
+- packageId: Nuke.Azure.KeyVault
+  repositoryUrl: https://github.com/nuke-build/azure-keyvault
+- packageId: Nuke.Azure
+  repositoryUrl: https://github.com/nuke-build/azure
