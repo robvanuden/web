@@ -14,8 +14,8 @@ $PSScriptRoot = Split-Path $MyInvocation.MyCommand.Path -Parent
 
 $NuGetUrl = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
 $SolutionDirectory = "$PSScriptRoot\"
-$BuildProjectFile = "$PSScriptRoot\build\.build.csproj"
-$BuildExeFile = "$PSScriptRoot\build\bin\debug\.build.exe"
+$BuildProjectFile = "$PSScriptRoot\build\_build.csproj"
+$BuildExeFile = "$PSScriptRoot\build\bin\debug\_build.exe"
 $TempDirectory = "$PSScriptRoot\.tmp"
 
 ###########################################################################

@@ -17,8 +17,8 @@ SCRIPT_DIR=$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)
 
 NUGET_URL="https://dist.nuget.org/win-x86-commandline/v4.1.0/nuget.exe"
 SOLUTION_DIRECTORY="$SCRIPT_DIR/"
-BUILD_PROJECT_FILE="$SCRIPT_DIR/build/.build.csproj"
-BUILD_EXE_FILE="$SCRIPT_DIR/build/bin/Debug/.build.exe"
+BUILD_PROJECT_FILE="$SCRIPT_DIR/build/_build.csproj"
+BUILD_EXE_FILE="$SCRIPT_DIR/build/bin/Debug/_build.exe"
 TEMP_DIRECTORY="$SCRIPT_DIR/.tmp"
 
 ###########################################################################

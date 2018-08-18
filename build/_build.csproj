@@ -8,14 +8,6 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>DEBUG;NET46</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DefineConstants>RELEASE;NET46</DefineConstants>
-  </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="FluentFTP" Version="19.2.2" />
     <PackageReference Include="Mono.Cecil" Version="0.10.0" />
@@ -26,6 +18,20 @@
       <ExcludeAssets>build</ExcludeAssets>
     </PackageReference>
     <PackageReference Include="System.Net.Http" Version="4.3.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="*.csproj.DotSettings" />
+
+    <None Include="..\build.ps1" />
+    <None Include="..\build.sh" />
+    <None Include="..\.nuke" />
+    <None Include="..\global.json" Condition="Exists('..\global.json')" />
+    <None Include="..\nuget.config" Condition="Exists('..\nuget.config')" />
+    <None Include="..\Jenkinsfile" Condition="Exists('..\Jenkinsfile')" />
+    <None Include="..\appveyor.yml" Condition="Exists('..\appveyor.yml')" />
+    <None Include="..\.travis.yml" Condition="Exists('..\.travis.yml')" />
+    <None Include="..\GitVersion.yml" Condition="Exists('..\GitVersion.yml')" />
   </ItemGroup>
 
 </Project>
