@@ -20,19 +20,11 @@ Generally, we don't need to install anything to use NUKE. It is designed to inte
 
 ## Build Setup
 
-To setup our project with NUKE, we can execute the global tool, or download and invoke a PowerShell/Bash script:
+To setup our project with NUKE, we can execute the global tool:
 
 ```powershell
 # Global Tool
 nuke
-
-# PowerShell
-powershell -Command iwr https://nuke.build/powershell -OutFile setup.ps1
-powershell -ExecutionPolicy ByPass -File ./setup.ps1
-
-# Bash
-curl -Lsfo setup.sh https://nuke.build/bash
-chmod +x setup.sh; ./setup.sh
 ```
 
 _Note: the global tool is in fact just a wrapper for the script invocations._
@@ -72,9 +64,6 @@ In order to invoke NUKE, we can use the global tool or one of the bootstrapping 
 ```powershell
 # Global Tool (anywhere below .nuke file)
 nuke [parameters]
-
-# Windows (via build.cmd)
-build [parameters]
 
 # PowerShell
 ./build.ps1 [parameters]
@@ -231,7 +220,7 @@ Target Clean => _ => _
         FileSystemTasks.DeleteDirectories(GlobDirectories(SourceDirectory, "**/bin", "**/obj"));
         FileSystemTasks.EnsureCleanDirectory(OutputDirectory);
     });
-    
+
 Target Restore => _ => _
     .DependsOn(Clean)
     .Executes(() =>
@@ -239,11 +228,11 @@ Target Restore => _ => _
         DotNetTasks.DotNetRestore(s => s
             .SetWorkingDirectory(SolutionDirectory)
             .SetProjectFile(SolutionFile));
-            
+
         // Or using static imports and default settings:
         DotNetRestore(s => DefaultDotNetRestore);
     });
-    
+
 Target Compile => _ => _
     .DependsOn(Restore)
     .Executes(() =>
@@ -256,7 +245,7 @@ Target Compile => _ => _
             .SetAssemblyVersion(GitVersion.GetNormalizedAssemblyVersion())
             .SetFileVersion(GitVersion.GetNormalizedFileVersion())
             .SetInformationalVersion(GitVersion.InformationalVersion));
-            
+
         // Or using static imports and default settings:
         DotNetBuild(s => DefaultDotNetBuild);
     });
@@ -280,7 +269,7 @@ Target TestAndCoverage => _ => _
         if (EnvironmentInfo.IsWin)
         {
             var searchDirectories = xunitSettings.TargetAssemblyWithConfigs.Select(x => Path.GetDirectoryName(x.Key));
-            
+
             OpenCoverTasks.OpenCover(s => s
                 .SetOutput(OutputDirectory / "coverage.xml")
                 .SetTargetSettings(xunitSettings)
@@ -301,7 +290,7 @@ Target TestAndCoverage => _ => _
                     "*/*.Designer.cs",
                     "*/*.g.cs",
                     "*/*.g.i.cs")
-        
+
             // Or using static imports and default settings:
             OpenCover(s => DefaultOpenCover
                 .SetOutput(OutputDirectory / "coverage.xml")
@@ -325,7 +314,7 @@ This example shows how to pack and publish build artifacts. Via the `NuGet` swit
 string Source => NuGet
     ? "https://api.nuget.org/v3/index.json"
     : "https://www.myget.org/F/myfeed/api/v2/package";
-    
+
 string Branch => GitRepository.Branch;
 string ChangelogFile => RootDirectory / "CHANGELOG.md";
 
@@ -334,7 +323,7 @@ Target Pack => _ => _
     .Executes(() =>
     {
         var changelogUrl = GitRepository.GetGitHubBrowseUrl(ChangelogFile, branch: "master");
-    
+
         DotNetTasks.DotNetPack(s => s
             .SetPackageReleaseNotes(changelogUrl)
             .SetWorkingDirectory(SolutionDirectory)
@@ -344,7 +333,7 @@ Target Pack => _ => _
             .EnableIncludeSymbols()
             .SetOutputDirectory(OutputDirectory)
             .SetVersion(GitVersion.NuGetVersionV2));
-            
+
         // Or using default settings:
         DotNetPack(s => DefaultDotNetPack
             .SetPackageReleaseNotes(changelogUrl));
