@@ -13,38 +13,45 @@ This article walks us through the most essential parts to know when working with
 
 ## Prerequisites
 
-Generally, we don't need to install anything to use NUKE. It is designed to integrate natively with IDEs such as VisualStudio, Rider or VSCode. However, for a better user experience, it is recommended to:
+Only for the setup, we need to install the global tool:
 
-- Install the global tool via `dotnet tool install -g Nuke.GlobalTool`
-- Install one of the IDE extensions for [ReSharper](https://resharper-plugins.jetbrains.com/packages/ReSharper.Nuke/) or [Rider](https://plugins.jetbrains.com/plugin/10803-nuke-support) (VisualStudio and VSCode extensions are work in progress)
+```
+dotnet tool install -g Nuke.GlobalTool
+```
+
+Besides that, NUKE is designed to integrate natively with every IDE. However, for a better user experience, we recommend to check out the available extensions for:
+
+- [JetBrains ReSharper](https://resharper-plugins.jetbrains.com/packages/ReSharper.Nuke/)
+- [JetBrains Rider](https://plugins.jetbrains.com/plugin/10803-nuke-support)
+- [VisualStudio Code](https://marketplace.visualstudio.com/items?itemName=nuke.support)
+
+Typically, these extensions allow for convenient execution of build targets.
 
 ## Build Setup
 
 To setup our project with NUKE, we can execute the global tool:
 
 ```powershell
-# Global Tool
+# For repositories without build
 nuke
+
+# For re-invocation
+nuke :setup
 ```
 
-_Note: the global tool is in fact just a wrapper for the script invocations._
+Although `nuke :setup` overwrites existing parts of the build, it is helpful to update bootstrapping files to the latest available version. Using a diff tool usually helps to resolve this. 
 
-### Required information
+During the setup, a wizard will prompt for the following questions:
 
-To setup our solution, we need to provide the following information:
+- Which **solution** should be the default?
+- How should the **bootstrapping** for the build project work?
+- What target **framework** should be used?
+- What project **format** should the build project use?
+- Which NUKE **version** should be used?
+- What should be the **location** for the build project?
+- What should be the **name** for the build project?
 
-- **Solution file** selection (if multiple exist)
-- **Build project:**
-    - **Platform:** .NET Framework/Mono or .NET Core
-    - **Format:** SDK-based or legacy
-    - **Directory** (default: _./build_)
-    - **Name** (default: _.build_)
-- **Version of NUKE** framework (default: current latest)
-- **Version of NuGet** executable (default: always latest)
-
-It is strongly recommended to chose **.NET Core** as the platform. This solely indicates that the build project is built with .NET Core. You'll still be able to build solutions that require the full .NET Framework.
-
-Whether we chose .NET Core or .NET Framework/Mono as the build project platform will also affect the bootstrapping.
+It is recommended to choose **.NET Core** as the platform. This solely indicates that the build project is built with .NET Core. The build will still be able to build projects based on the full .NET Framework.
 
 ### Effective changes
 
@@ -72,7 +79,7 @@ nuke [parameters]
 ./build.sh [parameters]
 ```
 
-_Note: again, the global tool is in fact just a wrapper for the script invocations._
+_Note: the global tool is in fact just a wrapper for the script invocations._
 
 ### Bootstrapping
 
