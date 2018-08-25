@@ -42,7 +42,7 @@ class NugetPackageLoader
         _project = new FolderNuGetProject(packagePath, new PackagePathResolver(packagePath, useSideBySidePaths: false));
         _projectContext = new ProjectContext();
         _sourceRepository = new SourceRepository(new PackageSource("https://api.nuget.org/v3/index.json"), resourceProviders);
-        _resolutionContext = new ResolutionContext(DependencyBehavior.Ignore,
+        _resolutionContext = new ResolutionContext(NuGet.Resolver.DependencyBehavior.Ignore,
             includePreReleases,
             includeUnlisted: false,
             versionConstraints: VersionConstraints.None);

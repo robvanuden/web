@@ -34,9 +34,6 @@ class CustomTocWriter : IDisposable
     readonly IReadOnlyCollection<AssemblyDefinition> _assemblies;
     readonly AbsolutePath _apiDirectory;
     readonly string _commonNamespace = typeof(NukeBuild).Namespace;
-#pragma warning disable 618
-    readonly string _coreNamespace = typeof(Nuke.Core.NukeBuild).Namespace;
-#pragma warning restore 618
 
     CustomTocWriter(AbsolutePath apiDirectory, IEnumerable<string> dllFiles)
     {
@@ -154,7 +151,6 @@ class CustomTocWriter : IDisposable
     {
         return _assemblies
             .SelectMany(x => x.MainModule.Types, (assembly, type) => new TypeInfo(type, assembly))
-            .Where(x => !x.Type.Namespace.StartsWith(_coreNamespace))
             .Distinct(x => x.Type.FullName)
             .Select(x => new { TypeInfo = x, Kind = GetKind(x.Type) })
             .Where(x => x.Kind != Kind.None)
