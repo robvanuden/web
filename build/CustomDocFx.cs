@@ -33,17 +33,17 @@ static class CustomDocFx
         var framework = GetFrameworkToAnalyze(directory);
         var name = new DirectoryInfo(directory).Name;
 
-        var src = GetRootRelativePath(directory).Replace(oldChar: '\\', newChar: '/');
-        var dest = GetRootRelativePath(apiDirectory / name).Replace(oldChar: '\\', newChar: '/');
-        var packages = GetRootRelativePath(Nuke.Common.NukeBuild.Instance.TemporaryDirectory).Replace(oldChar: '\\', newChar: '/');
+        var src = (UnixRelativePath) GetRootRelativePath(directory);
+        var dest = (UnixRelativePath) GetRootRelativePath(apiDirectory / name);
+        var packages = (UnixRelativePath) GetRootRelativePath(Nuke.Common.NukeBuild.Instance.TemporaryDirectory) / "packages";
 
         dynamic srcObject = new JObject();
-        srcObject.src = src;
+        srcObject.src = src.ToString();
         srcObject.files = new JArray($"lib/{framework}/*.dll");
 
         dynamic result = new JObject();
         result.src = srcObject;
-        result.dest = dest;
+        result.dest = dest.ToString();
         result.references = new JArray($"{packages}/System.ValueTuple/lib/netstandard1.0/System.ValueTuple.dll");
 
         return result;

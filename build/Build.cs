@@ -53,7 +53,7 @@ class Build : NukeBuild
         .DependsOn(Clean)
         .Executes(() =>
         {
-            InstallPackages(Projects.Select(x => x.PackageId), GenerationDirectory);
+            InstallPackages(Projects.Select(x => x.PackageId).Concat("System.ValueTuple"), GenerationDirectory);
         });
 
     Target CustomDocFx => _ => _
