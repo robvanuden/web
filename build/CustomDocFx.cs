@@ -16,7 +16,7 @@ static class CustomDocFx
 {
     public static void WriteCustomDocFx(string docFxFile, string docFxTemplateFile, string generationDirectory, AbsolutePath apiDirectory)
     {
-        var json = JObject.Parse(ReadAllText(docFxTemplateFile));
+        dynamic json = JObject.Parse(ReadAllText(docFxTemplateFile));
 
         var metadata = new JArray();
         Directory.GetDirectories(generationDirectory)
@@ -24,7 +24,7 @@ static class CustomDocFx
             .Select(directory => CreateMetadataItem(directory, apiDirectory))
             .ForEach(metadata.Add);
 
-        json["metadata"] = metadata;
+        json.metadata = metadata;
         WriteAllText(docFxFile, json.ToString(Formatting.Indented));
     }
 
@@ -35,18 +35,18 @@ static class CustomDocFx
 
         var src = GetRootRelativePath(directory).Replace(oldChar: '\\', newChar: '/');
         var dest = GetRootRelativePath(apiDirectory / name).Replace(oldChar: '\\', newChar: '/');
+        var packages = GetRootRelativePath(Nuke.Common.NukeBuild.Instance.TemporaryDirectory).Replace(oldChar: '\\', newChar: '/');
 
-        var srcObject = new JObject
-                        {
-                            new JProperty("src", new JValue(src)),
-                            new JProperty("files", new JArray { new JValue($"lib/{framework}/*.dll") })
-                        };
+        dynamic srcObject = new JObject();
+        srcObject.src = src;
+        srcObject.files = new JArray($"lib/{framework}/*.dll");
 
-        return new JObject
-               {
-                   new JProperty("src", new JArray(srcObject)),
-                   new JProperty("dest", new JValue(dest))
-               };
+        dynamic result = new JObject();
+        result.src = srcObject;
+        result.dest = dest;
+        result.references = new JArray($"{packages}/System.ValueTuple/lib/netstandard1.0/System.ValueTuple.dll");
+
+        return result;
     }
 
     static string GetFrameworkToAnalyze(string directory)
