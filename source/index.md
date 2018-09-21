@@ -129,7 +129,7 @@ title: Home
   <div class="row">
     <div class="col-md-5">
       <h2><span class="icon icon-keyboard"></span> Native IDE support</h2>
-      <p>Build projects are simple C# console applications - no pre-processing or scripting involved, and <a id="solution-view">part of your solution</a>! That means all the powerful IDE features that we love - like <a id="code-completion">code-completion</a>, refactorings and formatting - will work without any extensions. Targets are defined as <em>expression-bodied properties</em>. So say good-bye to magic strings! But most importantly, <a id="debugging">debugging</a> is available just as you know it. There is no more need to debug code by writing output to the console!</p>
+      <p>Build projects are simple C# console applications - no pre-processing or scripting involved, and <a id="solution-view">part of your solution</a>! That means all the powerful IDE features that we love - like <a id="code-completion">code-completion</a>, refactorings and formatting - will work without any extensions. Targets are defined as <em>expression-bodied properties</em>, so you might want to say good-bye to magic strings! But most importantly, <a id="debugging">debugging</a> is available just as you know it. There is no more need to debug code by writing output to the console!</p>
     </div>
     <div class="col-md-7">
       <div id="ide-support-carousel" class="carousel slide" data-ride="carousel1">
@@ -224,7 +224,7 @@ title: Home
   <div class="row">
     <div class="col-md-5">
       <h2><span class="icon icon-magic-wand"></span> Code-Generation</h2>
-      <p>Execution APIs for third-party command-line tools are based on data from <a id="references">official references</a>. We're extracing information like argument types, formatting and others into so-called <a id="metadata">specification files</a>. These files are then processed by a code-generator that generates a rich and consistent fluent API. Official help texts are shown in IntelliSense! And no more need to worry about escaping or separators! Addons like for the <a href="https://github.com/nuke-build/azure/tree/master/src/Nuke.Azure/Generated">Azure CLI</a> or for <a href="https://github.com/nuke-build/docker/blob/master/src/Nuke.Docker/Generated/Docker.Generated.cs">Docker</a> are even automatically pushed, whenever a new version of the tool is published.</p>
+      <p>Execution APIs for third-party command-line tools are based on data from <a id="references">official references</a>. We're extracing information like argument types, formatting and others into so-called <a id="metadata">specification files</a>. These files are then processed by a code-generator that generates a rich and consistent fluent API. Official help texts are shown in IntelliSense! And no more need to worry about escaping or separators! Check out our addons for <a href="https://github.com/nuke-build/azure/tree/master/src/Nuke.Azure/Generated">Azure CLI</a> and <a href="https://github.com/nuke-build/docker/blob/master/src/Nuke.Docker/Generated/Docker.Generated.cs">Docker</a>, which are even automatically updated whenever a new version of the related tool is published.</p>
     </div>
     <div class="col-md-7">
       <div id="code-generation-carousel" class="carousel slide" data-ride="carousel4">

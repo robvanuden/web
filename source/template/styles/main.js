@@ -41,7 +41,10 @@ $('#schema').on('click', function() {
 });
 
 $('#ide-support-carousel').carousel({
-  interval: 6000
+    interval: 6000
+})
+$('#global-extension-carousel').carousel({
+    interval: 6000
 })
 $('#code-generation-carousel').carousel({
   interval: 6000
