@@ -2,20 +2,32 @@ var $item1 = $('#ide-support-carousel .item');
 var $item2 = $('#default-settings-carousel .item'); 
 var $item3 = $('#adaptive-logging-carousel .item'); 
 var $item4 = $('#code-generation-carousel .item'); 
+var $item5 = $('#global-extension-carousel .item'); 
 $item1.eq(0).addClass('active');
 $item2.eq(0).addClass('active');
 $item3.eq(0).addClass('active');
 $item4.eq(0).addClass('active');
+$item5.eq(0).addClass('active');
 
 
-$('#auto-completion').on('click', function() {
+$('#solution-view').on('click', function() {
   $('#ide-support-carousel').carousel(0)
 });
-$('#navigation').on('click', function() {
+$('#code-completion').on('click', function() {
   $('#ide-support-carousel').carousel(1)
 });
 $('#debugging').on('click', function() {
   $('#ide-support-carousel').carousel(2)
+});
+
+$('#global-tool').on('click', function() {
+  $('#global-extension-carousel').carousel(0)
+});
+$('#command-palette').on('click', function() {
+  $('#global-extension-carousel').carousel(1)
+});
+$('#alt-enter').on('click', function() {
+  $('#global-extension-carousel').carousel(2)
 });
 
 $('#references').on('click', function() {

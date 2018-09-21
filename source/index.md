@@ -128,8 +128,8 @@ title: Home
 <div class="container feature">
   <div class="row">
     <div class="col-md-5">
-      <h2><span class="icon icon-keyboard"></span> Full IDE support</h2>
-      <p>Builds are full-fledged C# projects. No preprocessing involved! That means all the powerful IDE features like <a id="auto-completion">auto-completion</a>, refactorings and formatting will celebrate their comeback. Targets are defined as <em>expression-bodied properties</em> and therefore provide <a id="navigation">superior navigation</a>. Also target dependency definitions and rename refactorings benefit from this approach. Ultimately, <a id="debugging">debugging</a> is available just as you know it. No more writing debug output to the console!</p>
+      <h2><span class="icon icon-keyboard"></span> Native IDE support</h2>
+      <p>Build projects are simple C# console applications - no pre-processing or scripting involved, and <a id="solution-view">part of your solution</a>! That means all the powerful IDE features that we love - like <a id="code-completion">code-completion</a>, refactorings and formatting - will work without any extensions. Targets are defined as <em>expression-bodied properties</em>. So say good-bye to magic strings! But most importantly, <a id="debugging">debugging</a> is available just as you know it. There is no more need to debug code by writing output to the console!</p>
     </div>
     <div class="col-md-7">
       <div id="ide-support-carousel" class="carousel slide" data-ride="carousel1">
@@ -139,9 +139,9 @@ title: Home
           <li data-target="#ide-support-carousel" data-slide-to="2"></li>
         </ol>
         <div class="carousel-inner" role="listbox">
-          <div class="item"><img src="images/completion.png" data-color="lightblue" alt="Auto Completion"></div>
-          <div class="item"><img src="images/navigation.png" data-color="firebrick" alt="Navigation"></div>
-          <div class="item"><img src="images/debugging.png" data-color="firebrick" alt="Debugging"></div>
+          <div class="item"><img src="images/rider-solution-view.png" data-color="lightblue" alt="Solution View"></div>
+          <div class="item"><img src="images/vscode-code-completion.png" data-color="firebrick" alt="Code Completion"></div>
+          <div class="item"><img src="images/vscode-debugging.png" data-color="firebrick" alt="Debugging"></div>
         </div>
         <a class="left carousel-control" href="#ide-support-carousel" role="button" data-slide="prev">
           <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
@@ -162,7 +162,7 @@ title: Home
 <div class="jumbotron small-jumbotron feature">
   <div class="container">
     <div class="row">
-      <h2>Bootstrapping for all platforms included.</h2>
+      <h2>Works on .NET Core / .NET Framework / Mono.</h2>
       <span class="icon icon-windows8"></span>
       <span class="icon icon-tux"></span>
       <span class="icon icon-appleinc"></span>
@@ -172,14 +172,61 @@ title: Home
 
 
 
-<!-- CODE-GENERATION -->
+<!-- EXTENDED TOOLING -->
 <div class="container feature">
   <div class="row">
     <div class="col-md-5 col-md-push-7">
-      <h2><span class="icon icon-magic-wand"></span> Code-Generation</h2>
-      <p>We utilize <a id="references">ordinary CLI references</a> and collect information like argument types, formatting and help texts into <a id="metadata">language-agnostic metadata files</a>. This process is aided by <a id="schema">auto-completion</a>. The metadata is consumed by our custom code-generator, which will generate a comprehensive structure of entry methods, data classes, enumerations and extension methods. This approach <a href="https://vimeo.com/221086461">is fast</a>, reduces the risk of bugs and typos, and doesn't require tests. Most importantly, it always ensures a consistent API.</p>
+      <h2><span class="icon icon-fire"></span> Extended Tooling</h2>
+      <p>The .NET eco-system is just a wonderful place. Although build projects integrate natively into existing tooling, we are not stopping there! A <a id="global-tool">global tool</a> can be installed that provides help to setup and invoke builds with a single <code>nuke</code> command. Also extensions for VSCode, Rider and ReSharper are available that integrate with the <a href="command-pallete">command pallete</a> and the <a href="alt-enter">Alt-Enter menu</a> to execute build targets in the most convenient way!</p>
     </div>
     <div class="col-md-7 col-lg-pull-5">
+      <div id="global-extension-carousel" class="carousel slide" data-ride="carousel5">
+        <ol class="carousel-indicators">
+          <li data-target="#global-extension-carousel" data-slide-to="0" class="active"></li>
+          <li data-target="#global-extension-carousel" data-slide-to="1"></li>
+          <li data-target="#global-extension-carousel" data-slide-to="2"></li>
+        </ol>
+        <div class="carousel-inner" role="listbox">
+          <div class="item"><img src="images/global-tool.png" data-color="lightblue" alt="Global tool"></div>
+          <div class="item"><img src="images/vscode-command-palette.png" data-color="firebrick" alt="Command palette integration in VSCode"></div>
+          <div class="item"><img src="images/rider-alter-enter.png" data-color="firebrick" alt="Alt-Enter integration in JetBrains Rider"></div>
+        </div>
+        <a class="left carousel-control" href="#global-extension-carousel" role="button" data-slide="prev">
+          <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+          <span class="sr-only">Previous</span>
+        </a>
+        <a class="right carousel-control" href="#global-extension-carousel" role="button" data-slide="next">
+          <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+          <span class="sr-only">Next</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<!-- WHAT ELSE JUMBOTRON -->
+<div class="jumbotron small-jumbotron feature">
+  <div class="container">
+    <div class="row">
+      <h2>Wonder which tools we support?</h2>
+      <h2>...</h2>
+      <h2>That's the best part!</h2>
+    </div>
+  </div>
+</div>
+
+
+<!-- CODE-GENERATION -->
+<div class="container feature">
+  <div class="row">
+    <div class="col-md-5">
+      <h2><span class="icon icon-magic-wand"></span> Code-Generation</h2>
+      <p>APIs for execution of command-line tools is based on data from <a id="references">official references</a>. We're extracing information about argument types, formatting and others into so-called <a id="metadata">specification files</a>. These files are then processed by a code-generator that generates a rich and consistent fluent API. Official help texts are shown in IntelliSense! And no more need to worry about escaping or separators! Addons like for the <a href="https://github.com/nuke-build/azure/tree/master/src/Nuke.Azure/Generated">Azure CLI</a> or for <a href="https://github.com/nuke-build/docker/blob/master/src/Nuke.Docker/Generated/Docker.Generated.cs">Docker</a> are even automatically pushed, whenever a new version of the tool is published.</p>
+    </div>
+    <div class="col-md-7">
       <div id="code-generation-carousel" class="carousel slide" data-ride="carousel4">
         <ol class="carousel-indicators">
           <li data-target="#code-generation-carousel" data-slide-to="0" class="active"></li>

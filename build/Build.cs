@@ -37,7 +37,8 @@ class Build : NukeBuild
     AbsolutePath GenerationDirectory => TemporaryDirectory / "packages";
     AbsolutePath ApiDirectory => SourceDirectory / "api";
 
-    IEnumerable<ApiProject> Projects => YamlDeserializeFromFile<List<ApiProject>>(RootDirectory / "projects.yml");
+    IEnumerable<ApiProject> Projects => YamlDeserializeFromFile<List<ApiProject>>(RootDirectory / "projects.yml")
+                                        ?? new List<ApiProject>();
     
     Target Clean => _ => _
         .Executes(() =>
