@@ -118,7 +118,7 @@ title: Home
         </ol>
         <p>
         <a class="btn btn-default btn-md" href="/getting-started.html" role="button">Read more</a>
-        <a class="btn btn-default btn-md" href="https://vimeo.com/221165782" role="button">Watch more</a>
+        <a class="btn btn-default btn-md" href="https://www.youtube.com/watch?v=7gEqxzD6hbs" role="button">Watch more</a>
       </div>
   </div>
 </div>
@@ -162,7 +162,7 @@ title: Home
 <div class="jumbotron small-jumbotron feature">
   <div class="container">
     <div class="row">
-      <h2>Works on .NET Core / .NET Framework / Mono.</h2>
+      <h2>Supports .NET Core, .NET Framework and Mono!</h2>
       <span class="icon icon-windows8"></span>
       <span class="icon icon-tux"></span>
       <span class="icon icon-appleinc"></span>
@@ -177,7 +177,7 @@ title: Home
   <div class="row">
     <div class="col-md-5 col-md-push-7">
       <h2><span class="icon icon-fire"></span> Extended Tooling</h2>
-      <p>The .NET eco-system is just a wonderful place. Although build projects integrate natively into existing tooling, we are not stopping there! A <a id="global-tool">global tool</a> can be installed that provides help to setup and invoke builds with a single <code>nuke</code> command. Also extensions for VSCode, Rider and ReSharper are available that integrate with the <a href="command-pallete">command pallete</a> and the <a href="alt-enter">Alt-Enter menu</a> to execute build targets in the most convenient way!</p>
+      <p>The .NET eco-system is just a wonderful place. Although build projects integrate natively into existing tooling, we are not stopping there! A <a id="global-tool">global tool</a> can be installed, that assists with the setup and invocation of builds by a single <code>nuke</code> command. Also extensions for VSCode, Rider and ReSharper are available that integrate with the <a id="command-palette">command palette</a> and the <a id="alt-enter">Alt-Enter menu</a> to execute build targets in the most convenient way!</p>
     </div>
     <div class="col-md-7 col-lg-pull-5">
       <div id="global-extension-carousel" class="carousel slide" data-ride="carousel5">
@@ -224,7 +224,7 @@ title: Home
   <div class="row">
     <div class="col-md-5">
       <h2><span class="icon icon-magic-wand"></span> Code-Generation</h2>
-      <p>APIs for execution of command-line tools is based on data from <a id="references">official references</a>. We're extracing information about argument types, formatting and others into so-called <a id="metadata">specification files</a>. These files are then processed by a code-generator that generates a rich and consistent fluent API. Official help texts are shown in IntelliSense! And no more need to worry about escaping or separators! Addons like for the <a href="https://github.com/nuke-build/azure/tree/master/src/Nuke.Azure/Generated">Azure CLI</a> or for <a href="https://github.com/nuke-build/docker/blob/master/src/Nuke.Docker/Generated/Docker.Generated.cs">Docker</a> are even automatically pushed, whenever a new version of the tool is published.</p>
+      <p>Execution APIs for third-party command-line tools are based on data from <a id="references">official references</a>. We're extracing information like argument types, formatting and others into so-called <a id="metadata">specification files</a>. These files are then processed by a code-generator that generates a rich and consistent fluent API. Official help texts are shown in IntelliSense! And no more need to worry about escaping or separators! Addons like for the <a href="https://github.com/nuke-build/azure/tree/master/src/Nuke.Azure/Generated">Azure CLI</a> or for <a href="https://github.com/nuke-build/docker/blob/master/src/Nuke.Docker/Generated/Docker.Generated.cs">Docker</a> are even automatically pushed, whenever a new version of the tool is published.</p>
     </div>
     <div class="col-md-7">
       <div id="code-generation-carousel" class="carousel slide" data-ride="carousel4">
@@ -276,7 +276,7 @@ title: Home
     </div>
     <div class="col-md-6 list-right">
       <h2><span class="icon icon-price-tag2"></span> Path Construction</h2>
-      <p>Absolute and relative paths can be constructed using the <code>/</code> or <code>+</code> operators, which will automatically adjust the directory separator to the underlying OS. If required, paths can also be casted to match other platforms.</p>
+      <p>Absolute and relative paths can be constructed using the <code>/</code> division operator, which will automatically adjust the directory separator to the underlying OS. If required, paths can also be casted to match other platforms.</p>
       <div class="feature-list-img"><img src="images/path-construction.png" alt="Path Construction"></div>
     </div>
   </div>
