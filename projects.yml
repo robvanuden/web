@@ -12,3 +12,5 @@
   repositoryUrl: https://github.com/nuke-build/kubernetes
 - packageId: Nuke.Helm
   repositoryUrl: https://github.com/nuke-build/helm
+- packageId: Nuke.DocFX
+  repositoryUrl: https://github.com/nuke-build/docfx

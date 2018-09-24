@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Nuke.Common;
 using Nuke.Common.Utilities.Collections;
 using static Nuke.Common.IO.PathConstruction;
 using static Nuke.Common.IO.TextTasks;
@@ -33,9 +34,10 @@ static class CustomDocFx
         var framework = GetFrameworkToAnalyze(directory);
         var name = new DirectoryInfo(directory).Name;
 
-        var src = (UnixRelativePath) GetRootRelativePath(directory);
-        var dest = (UnixRelativePath) GetRootRelativePath(apiDirectory / name);
-        var packages = (UnixRelativePath) GetRootRelativePath(Nuke.Common.NukeBuild.Instance.TemporaryDirectory) / "packages";
+        var rootDirectory = NukeBuild.Instance.RootDirectory;
+        var src = (UnixRelativePath) GetRelativePath(rootDirectory, directory);
+        var dest = (UnixRelativePath) GetRelativePath(rootDirectory, apiDirectory / name);
+        var packages = (UnixRelativePath) GetRelativePath(rootDirectory, NukeBuild.Instance.TemporaryDirectory) / "packages";
 
         dynamic srcObject = new JObject();
         srcObject.src = src.ToString();

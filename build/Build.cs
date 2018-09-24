@@ -4,24 +4,26 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Net;
 using FluentFTP;
-using Nuke.Common.Tools.DocFx;
 using Nuke.Common;
+using Nuke.Common.ProjectModel;
 using Nuke.Common.Utilities.Collections;
+using Nuke.DocFX;
 using static CustomTocWriter;
 using static Disclaimer;
 using static CustomDocFx;
 using static NugetPackageLoader;
 using static Nuke.Common.IO.SerializationTasks;
-using static Nuke.Common.Tools.DocFx.DocFxTasks;
 using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.EnvironmentInfo;
 using static Nuke.Common.IO.FtpTasks;
 using static Nuke.Common.IO.PathConstruction;
 using static Nuke.Common.Logger;
+using static Nuke.DocFX.DocFXTasks;
 
 class Build : NukeBuild
 {
@@ -31,11 +33,16 @@ class Build : NukeBuild
     [Parameter] readonly string FtpPassword;
     [Parameter] readonly string FtpServer;
 
-    string DocFxFile => RootDirectory / "docfx.json";
-    string SiteDirectory => OutputDirectory / "site";
+    new AbsolutePath OutputDirectory => RootDirectory / "output";
+    new AbsolutePath SourceDirectory => RootDirectory / "source";
 
     AbsolutePath GenerationDirectory => TemporaryDirectory / "packages";
     AbsolutePath ApiDirectory => SourceDirectory / "api";
+    
+    string DocFxFile => RootDirectory / "docfx.json";
+    string SiteDirectory => OutputDirectory / "site";
+
+    [Solution("nuke-web.sln")] readonly Solution Solution;
 
     IEnumerable<ApiProject> Projects => YamlDeserializeFromFile<List<ApiProject>>(RootDirectory / "projects.yml")
                                         ?? new List<ApiProject>();
@@ -44,7 +51,7 @@ class Build : NukeBuild
         .Executes(() =>
         {
             DeleteDirectories(GlobDirectories(SourceDirectory, "*/bin", "*/obj"));
-            DeleteDirectory(SolutionDirectory / "obj");
+            DeleteDirectory(Solution.Directory / "obj");
             EnsureCleanDirectory(ApiDirectory);
             EnsureCleanDirectory(GenerationDirectory);
             EnsureCleanDirectory(OutputDirectory);
@@ -88,7 +95,9 @@ class Build : NukeBuild
                 SetVariable("VisualStudioVersion", "15.0");
             }
 
-            DocFxMetadata(DocFxFile, s => s.SetLogLevel(DocFxLogLevel.Verbose));
+            DocFXMetadata(s => s
+                .SetProjects(DocFxFile)
+                .SetLogLevel(DocFXLogLevel.Verbose));
         });
 
     Target CustomToc => _ => _
@@ -103,8 +112,9 @@ class Build : NukeBuild
         .DependsOn(Metadata, CustomToc, Disclaimer)
         .Executes(() =>
         {
-            DocFxBuild(DocFxFile, s => s
-                .SetLogLevel(DocFxLogLevel.Verbose)
+            DocFXBuild(s => s
+                .SetConfigFile(DocFxFile)
+                .SetLogLevel(DocFXLogLevel.Verbose)
                 .SetServe(IsLocalBuild));
         });
 
