@@ -1,10 +1,9 @@
 - name: Home
   href: index.md
-- name: Getting Started
-  href: getting-started.md
-- name: Command-Line
-  href: command-line.md
 - name: Documentation
+  href: docs
+  homepage: docs/getting-started/philosophy.md
+- name: API Reference
   href: api/
 - name: GitHub
   href: https://github.com/nuke-build/nuke

@@ -1,0 +1,4 @@
+- name: Philosophy
+  href: philosophy.md
+- name: Setup
+  href: setup.md

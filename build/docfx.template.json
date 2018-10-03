@@ -10,7 +10,12 @@
       },
       {
         "src": "source",
-        "files": [ "*.md", "toc.yml" ]
+        "files": [ 
+          "*.md", 
+          "toc.yml",
+          "docs/**/*.md",
+          "docs/**/toc.yml"
+        ]
       }
     ],
     "resource": [

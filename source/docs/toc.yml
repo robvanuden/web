@@ -1,0 +1,10 @@
+- name: Getting Started
+  href: getting-started/toc.yml
+- name: Running Builds
+  href: running-builds/toc.yml
+- name: Authoring Builds
+  href: authoring-builds/toc.yml
+- name: Sharing Builds
+  href: sharing-builds/toc.yml
+- name: Writing Addons
+  href: writing-addons/toc.yml

@@ -95,11 +95,12 @@ class Build : NukeBuild
         });
 
     Target CustomToc => _ => _
-        .DependsOn(DownloadPackages, Metadata)
+        .DependsOn(DownloadPackages)
+        .After(Metadata)
         .Executes(() =>
         {
             GlobFiles(ApiDirectory, "**/toc.yml").ForEach(File.Delete);
-            WriteCustomTocs(ApiDirectory, GlobFiles(GenerationDirectory, "**/lib/net4*/*.dll"));
+            WriteCustomTocs(ApiDirectory, BuildProjectDirectory, GlobFiles(GenerationDirectory, "**/lib/net4*/*.dll"));
         });
 
     Target BuildSite => _ => _

@@ -177,7 +177,7 @@ title: Home
   <div class="row">
     <div class="col-md-5 col-md-push-7">
       <h2><span class="icon icon-fire"></span> Extended Tooling</h2>
-      <p>The .NET eco-system is just a wonderful place. Although build projects integrate natively into existing tooling, we are not stopping there! A <a id="global-tool">global tool</a> can be installed, that assists with the setup and invocation of builds by a single <code>nuke</code> command. Also extensions for VSCode, Rider and ReSharper are available that integrate with the <a id="command-palette">command palette</a> and the <a id="alt-enter">Alt-Enter menu</a> to execute build targets in the most convenient way!</p>
+      <p>The .NET ecosystem is just a wonderful place. Although build projects integrate natively into existing tooling, we are not stopping there! A <a id="global-tool">global tool</a> can be installed, that assists with the setup and invocation of builds by a single <code>nuke</code> command. Also extensions for VSCode, Rider and ReSharper are available that enhance the <a id="command-palette">command palette</a> and the <a id="alt-enter">Alt-Enter menu</a> to execute build targets in the most convenient way!</p>
     </div>
     <div class="col-md-7 col-lg-pull-5">
       <div id="global-extension-carousel" class="carousel slide" data-ride="carousel5">

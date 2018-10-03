@@ -1,0 +1,14 @@
+- name: Fundamentals
+  href: fundamentals.md
+- name: Predefined Parameters
+  href: predefined-parameters.md
+- name: Parameter Declaration
+  href: parameter-declaration.md
+- name: Path Handling
+  href: path-handling.md
+- name: CLI Tools
+  href: cli-tools.md
+- name: CI Integration
+  href: ci-integration.md
+- name: Events
+  href: events.md

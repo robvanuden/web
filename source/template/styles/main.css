@@ -252,33 +252,30 @@ footer {
 
 
 
-.category {
-    position: relative;
-    font-size: 10px;
-    line-height: 20px;
-    text-align: center;
-    text-transform: uppercase;
+/* No indent */
+.toc .level2 {
+    font-weight: normal;
+    margin: 5px 0 0 0px;
 }
-.category:before {
-    position: absolute;
-    top: 50%;
-    display: block;
-    content: "";
-    width: 100%;
-    height: 1px;
-    background-color: #6f7890;
+.toc .level2 > li {
+    margin: 5px 0;
 }
-.category-text {
-    margin-top: 0;
-    margin-bottom: 0;
-    font-size: 100%;
-    color: inherit;
-    position: relative;
-    z-index: 2;
-    display: inline-block;
-    padding-left: 1em;
-    padding-right: 1em;
-    color: #6f7890;
-    vertical-align: middle;
-    background-color: #f1f1f1;
+
+/* Separator in mobile view */
+@media only screen and (max-width: 768px) {
+    .toc li {
+        margin-right: 10px;
+    }
+    .toc li:after {
+        content: "\00a0\00a0\2013"; /* https://css-tricks.com/snippets/html/glyphs/ */
+    }
+    .toc li:last-child:after {
+        content: "";
+    }
 }
+
+/* Bigger category text */
+.toc .level1 > li > a {
+    font-size: 12pt;
+}
+
