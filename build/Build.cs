@@ -1,4 +1,4 @@
-﻿// Copyright Matthias Koch 2018.
+// Copyright Matthias Koch 2018.
 // Distributed under the MIT License.
 // https://github.com/nuke-build/web/blob/master/LICENSE
 
@@ -19,7 +19,6 @@ using static CustomDocFx;
 using static NugetPackageLoader;
 using static Nuke.Common.IO.SerializationTasks;
 using static Nuke.Common.IO.FileSystemTasks;
-using static Nuke.Common.EnvironmentInfo;
 using static Nuke.Common.IO.FtpTasks;
 using static Nuke.Common.IO.PathConstruction;
 using static Nuke.Common.Logger;
@@ -88,13 +87,6 @@ class Build : NukeBuild
         .DependsOn(DownloadPackages, CustomDocFx)
         .Executes(() =>
         {
-            if (IsLocalBuild)
-            {
-                //SetVariable ("MSBuildSDKsPath", @"C:\Program Files\dotnet\sdk\2.0.0\Sdks");
-                SetVariable("VSINSTALLDIR", @"C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional");
-                SetVariable("VisualStudioVersion", "15.0");
-            }
-
             DocFXMetadata(s => s
                 .SetProjects(DocFxFile)
                 .SetLogLevel(DocFXLogLevel.Verbose));
