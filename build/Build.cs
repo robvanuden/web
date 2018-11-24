@@ -1,4 +1,4 @@
-// Copyright Matthias Koch 2018.
+﻿// Copyright Matthias Koch 2018.
 // Distributed under the MIT License.
 // https://github.com/nuke-build/web/blob/master/LICENSE
 
@@ -11,17 +11,18 @@ using System.Net;
 using FluentFTP;
 using Nuke.Common;
 using Nuke.Common.ProjectModel;
+using Nuke.Common.Tools.NuGet;
 using Nuke.Common.Utilities.Collections;
 using Nuke.DocFX;
 using static CustomTocWriter;
 using static Disclaimer;
 using static CustomDocFx;
-using static NugetPackageLoader;
 using static Nuke.Common.IO.SerializationTasks;
 using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.IO.FtpTasks;
 using static Nuke.Common.IO.PathConstruction;
 using static Nuke.Common.Logger;
+using static Nuke.Common.Tools.NuGet.NuGetTasks;
 using static Nuke.DocFX.DocFXTasks;
 
 class Build : NukeBuild
@@ -60,7 +61,8 @@ class Build : NukeBuild
         .DependsOn(Clean)
         .Executes(() =>
         {
-            InstallPackages(Projects.Select(x => x.PackageId).Concat("System.ValueTuple"), GenerationDirectory);
+            var packages = Projects.Select(x => x.PackageId).Concat("System.ValueTuple");
+            packages.ForEach(x => NuGetTasks.NuGet($"install {x} -OutputDirectory {GenerationDirectory} -DependencyVersion Ignore -Verbosity detailed"));
         });
 
     Target CustomDocFx => _ => _
