@@ -28,7 +28,7 @@ A declared parameter can also have a description and will automatically show up 
 > [!Note]
 > The resolution of parameters is very forgiving. For instance, a parameter `ApiKey` can be passed with pascal-casing `-ApiKey` or lisp-casing `--api-key`. Minor typing mistakes can be detected from calculating the [Levenshtein distance](https://en.wikipedia.org/wiki/Levenshtein_distance) and are reported as a warnings. However, in practice it is more convenient to use the [global tool shell-completion](../running-builds/global-tool.md).
 
-### Supported Types
+## Supported Types
 
 String values passed as parameters can be automatically converted into a variety of types. Out-of-the-box, NUKE supports primitive types like `bool`, `string`, and other numeric types:
 

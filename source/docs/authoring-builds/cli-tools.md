@@ -18,34 +18,95 @@ Interacting with third-party command-line interface tools (CLIs) is an essential
 MSBuild($"{SolutionFile} /target:Rebuild /p:Configuration={Configuration} /nr:false");
 ```
 
-While this example is quite easy to understand, it also illustrates certain weaknesses. What if `SolutionFile` contains a space? How can multiple targets be passed? Should the configuration really be injected as property or as dedicated argument? What does the `/nr` switch stand for? NUKE answers these questions with a fluent syntax.
+The returned object is a collection of standard and error output. 
 
-### Fluent APIs
+## Fluent APIs
 
-Another way of invoking CLI tools it to use an individual fluent API. The example from above can be rewritten as:
+While the example from above is quite easy to understand, it also illustrates certain weaknesses. What if `SolutionFile` contains a space? How can multiple targets be passed? Should the configuration really be injected as property or as dedicated argument? What does the `/nr` switch stand for? These issues can be solved by using individual fluent APIs:
 
 ```c#
 // using Nuke.Common.Tools.MSBuild;
 // using static Nuke.Common.Tools.MSBuild.MSBuildTasks;
 
-MSBuild(s => s
+MSBuild(o => o
     .SetTargetPath(SolutionFile)
     .SetTargets("Clean", "Build")
     .SetConfiguration(Configuration)
     .EnableNodeReuse());
 ```
 
-These fluent APIs are used to manipulate the actual process invocation, including tool path, arguments, working directory, timeout and environment variables.
+These fluent APIs are used to manipulate the process invocation, including tool path, arguments, working directory, timeout and environment variables.
 
 > [!Note]
 > All fluent APIs implement a variation of the [builder pattern](https://en.wikipedia.org/wiki/Builder_pattern), in which every fluent call will create an immutable copy of the current `ToolSettings` instance with the intended changes applied. This enables to compose similar process invocations very easily by reusing an intermediate state of the settings object.
 
-Every fluent API can easily be discovered with popular IDEs using code completion. Most importantly, this contains the original tool documentation:
+Using any IDE, an individual fluent API can easily be discovered via code completion. Most importantly, this contains the original tool documentation:
 
 ![CLI Tools](~/images/cli-tools.gif)
 
-> [!Note]
-> Occasionally, it may happen that an argument is not available from the fluent API. In this case, the `SetArgumentConfigurator` method can be used to add them manually. However, an [issue](https://github.com/nuke-build/nuke/issues/new) should be created to address missing arguments in future releases.
+### Conditional Modifications
+
+Sometimes it is desirable to set certain options only, if some condition is met. This can be done fluently too, using the `When` extension:
+
+```c#
+DotNetTest(o => o
+    .SetProjectFile(ProjectFile)
+    .SetFramework("netcoreapp2.0")
+    .SetConfiguration(Configuration)
+    .EnableNoBuild()
+    .When(PublishTestResults, oo => oo
+        .SetLogger("trx")
+        .SetResultsDirectory(TestResultsDirectory)));
+```
+
+### Combinatorial Invocations
+
+A typical situation when using MSBuild for compilation, is to compile for different configurations, target frameworks or runtimes. This can easily be done using the `CombineWith` method:
+
+```c#
+var publishCombinations =
+    from project in new[] { FirstProject, SecondProject }
+    from framework in project.GetMSBuildProject().GetTargetFrameworks()
+    from runtime in new[] { "win10-x86", "osx-x64", "linux-x64" }
+    select new { project, framework, runtime };
+
+DotNetPublish(o => o
+    .EnableNoRestore()
+    .SetConfiguration(Configuration)
+    .CombineWith(publishCombinations, (oo, v) => oo
+        .SetProject(v.project)
+        .SetFramework(v.framework)
+        .SetRuntime(v.runtime)));
+```
+
+Depending on the number of target frameworks defined in the project files, there will be a minimum of 6 invocations of `dotnet publish`.
+
+There is also an overload to create more individual continuations:
+
+```c#
+DotNetPublish(o => o
+    .SetConfiguration(Configuration)
+    .EnableNoRestore()
+    .CombineWith(
+        oo => oo
+            .SetProject(FirstProject),
+        oo => oo
+            .SetProject(SecondProject)
+            .SetFramework("netstandard2.0"),
+        oo => oo
+            .SetProject(SecondProject)
+            .SetFramework("net461")));
+```
+
+### Custom Arguments
+
+Occasionally, it may happen that an argument is not available from the fluent API. In this case, the `SetArgumentConfigurator` method can be used to add them manually:
+
+```c#
+MSBuild(o => o
+    .SetTargetPath(SolutionFile)
+    .SetArgumentConfigurator(a => a.Add("/r")));
+```
 
 <!--
     SetToolPath
@@ -57,7 +118,7 @@ Every fluent API can easily be discovered with popular IDEs using code completio
     SetArgumentConfigurator
 -->
 
-### Unsupported Tools
+## Unsupported Tools
 
 Many of the most popular tools for .NET development are already implemented either in `Nuke.Common` or dedicated `Nuke.[Tool]` packages. In case that a certain tool is not yet supported with a proper CLI task class, NUKE allows to use **delegate injection** with one of the two attributes `PathExecutable` or `PackageExecutable`:
 

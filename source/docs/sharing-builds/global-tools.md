@@ -12,7 +12,7 @@ title: Global Tools
 
 Due to its native integration with C# as a host language and existing IDEs, NUKE makes it easy to be introduced to the whole development team, so that everyone can manage the build. However, there are times when this is either not required or even unwanted. For these cases, a build can be compiled and published as [.NET Core Global Tool](https://docs.microsoft.com/en-us/dotnet/core/tools/global-tools), which allows to **run a build without having a build project or bootstrapping scripts** in the repository. Typically, such repositories would follow an agreed folder structure and naming scheme. Only the `.nuke` file can still be of use, to mark the root directory. Alternatively, the `--root` parameter can be used, to provide this information ad-hoc.
 
-### Usage
+## Usage
 
 As a first step, the build project file needs to be extended with the [necessary information for global tool packaging](https://docs.microsoft.com/en-us/dotnet/core/tools/global-tools-how-to-create#setup-the-global-tool):
 

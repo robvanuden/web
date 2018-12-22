@@ -12,7 +12,7 @@ title: External Files
 
 When using submodules or NuGet packages for build sharing, it usually involves quite a bit of _heavy_ work, like updating the parent repositories or creating a NuGet feed. External files are a more lightweight approach: There is a **primary repository** containing the actual `Build.cs` template file, and several **replica repositories** with only a `Build.cs.ext` file. This `.ext` file contains a URI referencing the `Build.cs` file, which will cause MSBuild to actually download or update that file as a pre-build step when compiling the build project. The generated `Build.cs` file can either be committed or excluded from the repository, depending on the individual requirements.
 
-### Usage
+## Usage
 
 To enable support for external files, the build project file must contain an item group similar to this:
 
@@ -30,9 +30,9 @@ https://raw.githubusercontent.com/nuke-build/nuke/develop/build/Build.cs
 
 Note, that instead of `develop` also a tag like `1.2.3` could be used, allowing to use lightweight versioning.
 
-### Extension Points
+## Templating
 
-Besides natural extensibility points like partial classes or type inheritance, this approach also supports minor output modifications in the form of **conditionals and replacements**. Considering a template like this:
+Besides natural extension points like partial classes or type inheritance, this approach supports minor output modifications in the form of **conditionals and replacements**. Considering a template like this:
 
 ```csharp
 class Build

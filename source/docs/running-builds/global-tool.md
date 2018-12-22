@@ -5,10 +5,10 @@ jr.disableMetadata: false
 jr.disableLeftMenu: false
 jr.disableRightMenu: true
 uid: running-builds-global-tool
-title: Global Tool
+title: Via Global Tool
 ---
 
-# Global Tool
+# Via Global Tool
 
 Besides invoking one of the bootstrapping scripts `build.sh` or `build.ps1`, builds can also be executed via the `nuke` command provided as a global tool:
 
@@ -57,4 +57,9 @@ _nuke_bash_complete()
   COMPREPLY=( $(compgen -W "$completions" -- "$word") )
 }
 complete -f -F _nuke_bash_complete nuke
+```
+
+For **fish**, add the following to `config.fish`:
+```bash
+complete -fc nuke --arguments '(nuke :complete (commandline -cp))'
 ```
