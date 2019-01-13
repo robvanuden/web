@@ -44,7 +44,6 @@
     "globalMetadata": {
       "_appTitle": "NUKE",
       "_enableSearch": true,
-      "_disableBreadcrumb": true,
       "_gitContribute": {
         "branch": "develop",
         "apiSpecFolder": "source/overwrites"
@@ -52,6 +51,5 @@
     },
     "noLangKeyword": false,
     "xrefService": [ "https://xref.docs.microsoft.com/query?uid={uid}" ]
-
   }
 }

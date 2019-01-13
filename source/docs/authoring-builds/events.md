@@ -1,5 +1,4 @@
 ---
-_disableBreadcrumb: true
 _disableAffix: true
 jr.disableMetadata: false
 jr.disableLeftMenu: false

@@ -213,9 +213,8 @@ a:hover {
 
 
 
-
 .article {
-  margin-top: 50px;
+  margin-top:90px;
 }
 .article img {
   height:auto;
@@ -229,21 +228,6 @@ a:hover {
     margin:auto;
     max-width:100%;
   }
-}
-.toc {
-  padding-bottom:20px;
-}
-.sidefilter {
-  top:51px;
-}
-.sidetoc {
-  top:110px;
-  margin-top:0px;
-  bottom: 140px;
-  border-bottom: 1px solid #e7e7e7;
-}
-footer {
-  position:static;
 }
 .footer {
   background:#222;
