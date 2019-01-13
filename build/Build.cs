@@ -33,6 +33,10 @@ class Build : NukeBuild
     [Parameter] readonly string FtpPassword;
     [Parameter] readonly string FtpServer;
 
+    [Parameter] readonly bool PublishDocs;
+    [Parameter] readonly bool PublishImages;
+    [Parameter] readonly bool PublishApi;
+
     new AbsolutePath OutputDirectory => RootDirectory / "output";
     new AbsolutePath SourceDirectory => RootDirectory / "source";
 
@@ -40,7 +44,7 @@ class Build : NukeBuild
     AbsolutePath ApiDirectory => SourceDirectory / "api";
     
     string DocFxFile => RootDirectory / "docfx.json";
-    string SiteDirectory => OutputDirectory / "site";
+    AbsolutePath SiteDirectory => OutputDirectory / "site";
 
     [Solution("nuke-web.sln")] readonly Solution Solution;
 
@@ -110,7 +114,7 @@ class Build : NukeBuild
             DocFXBuild(s => s
                 .SetConfigFile(DocFxFile)
                 .SetLogLevel(DocFXLogLevel.Verbose)
-                .SetServe(IsLocalBuild));
+                .SetServe(InvokedTargets.Contains(nameof(BuildSite))));
         });
 
     Target Publish => _ => _
@@ -119,7 +123,14 @@ class Build : NukeBuild
         .Executes(() =>
         {
             FtpCredentials = new NetworkCredential(FtpUsername, FtpPassword);
-            FtpUploadDirectoryRecursively(SiteDirectory, FtpServer);
+            
+            if (PublishDocs)
+                FtpUploadDirectoryRecursively(SiteDirectory / "docs", FtpServer + "/docs");
+            if (PublishImages)
+                FtpUploadDirectoryRecursively(SiteDirectory / "images", FtpServer + "/images");
+            if (PublishApi)
+                FtpUploadDirectoryRecursively(SiteDirectory / "api", FtpServer + "/api");
+            
 
             return;
             var client = new FtpClient(FtpServer, new NetworkCredential(FtpUsername, FtpPassword));
