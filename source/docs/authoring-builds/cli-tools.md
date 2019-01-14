@@ -17,7 +17,10 @@ Interacting with third-party command-line interface tools (CLIs) is an essential
 MSBuild($"{SolutionFile} /target:Rebuild /p:Configuration={Configuration} /nr:false");
 ```
 
-The returned object is a collection of standard and error output. 
+The returned object is a collection of standard and error output.
+
+> [!Note]
+> Most CLI tasks require to add a package reference to the build project file. For instance, when using `NUnitTasks` there should be an entry `<PackageReference Include="NUnit.ConsoleRunner" Version="3.9.0" />` or similar in the project file. While it would be possible to magically download required packages, this approach ensures reproducible builds at any time. If a package reference is missing, the resulting error message will contain its actual package id.
 
 ## Fluent APIs
 
@@ -58,7 +61,7 @@ DotNetTest(o => o
         .SetResultsDirectory(TestResultsDirectory)));
 ```
 
-### Combinatorial Invocations
+### Combinatorial Modifications
 
 A typical situation when using MSBuild for compilation, is to compile for different configurations, target frameworks or runtimes. This can easily be done using the `CombineWith` method:
 
@@ -96,6 +99,39 @@ DotNetPublish(o => o
             .SetProject(SecondProject)
             .SetFramework("net461")));
 ```
+
+### Multiple Invocations
+
+Based on [combinatorial modifications](#combinatorial-modifications) it is possible to set a `degreeOfParallelism` (default `1`) and a flag to `continueOnFailure` (default `false`):
+
+```c#
+DotNetNuGetPush(s => s
+        .SetSource(Source)
+        .SetSymbolSource(SymbolSource)
+        .SetApiKey(ApiKey)
+        .CombineWith(
+            OutputDirectory.GlobFiles("*.nupkg").NotEmpty(), (cs, v) => cs
+                .SetTargetPath(v)),
+    degreeOfParallelism: 5,
+    continueOnFailure: true);
+```
+
+This example will always have 5 packages being pushed simultaneously. Possible exceptions, for instance when a package already exists, are accumulated to an `AggregateException` and thrown when all invocations have been processed. The console output is buffered until all invocations are completed.
+
+### Verbosity Mapping
+
+Using the `VerbosityMappingAttribute`, it is possible to automatically map the verbosity passed via `--verbosity` to individual tools. The attribute must be applied on the build class level:
+
+```c#
+[VerbosityMapping(typeof(MSBuildVerbosity),
+    Quiet = nameof(MSBuildVerbosity.Quiet),
+    Minimal = nameof(MSBuildVerbosity.Minimal),
+    Normal = nameof(MSBuildVerbosity.Normal),
+    Verbose = nameof(MSBuildVerbosity.Detailed))]
+class Build : NukeBuild
+```
+
+For some tools there already exist predefined attributes, like `DefaultMSBuildVerbosityMapping` or `DefaultDotNetVerbosityMapping`.
 
 ### Custom Arguments
 

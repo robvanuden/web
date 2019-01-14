@@ -25,7 +25,7 @@ $ build --configuration Release
 A declared parameter can also have a description and will automatically show up in the [help output](../running-builds/fundamentals.md#help) of the build.
 
 > [!Note]
-> The resolution of parameters is very forgiving. For instance, a parameter `ApiKey` can be passed with pascal-casing `-ApiKey` or lisp-casing `--api-key`. Minor typing mistakes can be detected from calculating the [Levenshtein distance](https://en.wikipedia.org/wiki/Levenshtein_distance) and are reported as a warnings. However, in practice it is more convenient to use the [global tool shell-completion](../running-builds/global-tool.md).
+> The resolution of parameters is very forgiving. For instance, a parameter `ApiKey` can be passed with pascal-casing `-ApiKey` or lisp-casing `--api-key`. Minor typing mistakes can be detected from calculating the [Levenshtein distance](https://en.wikipedia.org/wiki/Levenshtein_distance) and are reported as warnings. However, in practice it is more convenient to use the [global tool shell-completion](../running-builds/global-tool.md).
 
 ## Supported Types
 

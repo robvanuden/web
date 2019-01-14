@@ -1,8 +1,7 @@
 - name: Home
   href: index.md
 - name: Documentation
-  href: docs
-  homepage: docs/getting-started/philosophy.md
+  href: docs/
 - name: API Reference
   href: api/
 - name: GitHub

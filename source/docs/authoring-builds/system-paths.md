@@ -3,11 +3,11 @@ _disableAffix: true
 jr.disableMetadata: false
 jr.disableLeftMenu: false
 jr.disableRightMenu: true
-uid: authoring-builds-path-handling
+uid: authoring-builds-system-paths
 title: Path Handling
 ---
 
-# Path Handling
+# System Paths
 
 Every now and then, incompliant paths can cause some non-obvious issues when executing builds. Directory separators need to match the underlying operating system, and relative paths can be messed up when using a different working directory. To solve this problem, NUKE implements several classes that make working with paths easier. A central idea of these classes is to override the division operator `/` to improve readability and hide details about directory separators at the same time.
 

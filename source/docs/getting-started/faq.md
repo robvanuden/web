@@ -39,7 +39,7 @@ No. It's perfectly fine to remove them and call `dotnet run` on the build projec
 
 ### That `=> _ => _` looks weird. Can it be changed?
 
-Firstly, we acknowledge that it looks funky, but at the same time we don't consider it being significant for working with NUKE. There are snippets available that help to write that part of target declarations more easily. In regards to possible changes, it is open for extension by overriding `NukeBuild.CreateExecutableTargetFactory()`.
+Firstly, we acknowledge that it looks funky, but at the same time we don't consider it being significant for working with NUKE. There are snippets available that help to write that part of target declarations more easily. In regards to possible changes, it is open for extension by overriding `NukeBuild.CreateExecutableTargetFactory()` in a [separate feature branch](https://github.com/nuke-build/common/tree/feature/target-factory).
 
 ### How can I debug my build?
 

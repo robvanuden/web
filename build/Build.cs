@@ -63,7 +63,8 @@ class Build : NukeBuild
 
     Target DownloadPackages => _ => _
         .DependsOn(Clean)
-        .OnlyWhen(() => PublishApi)
+        .OnlyWhenStatic(() => PublishApi)
+        .WhenSkipped(DependencyBehavior.Skip)
         .Executes(() =>
         {
             var packages = Projects.Select(x => x.PackageId).Concat("System.ValueTuple");
@@ -79,7 +80,8 @@ class Build : NukeBuild
 
     Target Disclaimer => _ => _
         .DependsOn(DownloadPackages)
-        .OnlyWhen(() => PublishApi)
+        .OnlyWhenStatic(() => PublishApi)
+        .WhenSkipped(DependencyBehavior.Skip)
         .Executes(() =>
         {
             var disclaimerDirectory = SourceDirectory / "disclaimers";
@@ -93,7 +95,8 @@ class Build : NukeBuild
 
     Target Metadata => _ => _
         .DependsOn(DownloadPackages, CustomDocFx)
-        .OnlyWhen(() => PublishApi)
+        .OnlyWhenStatic(() => PublishApi)
+        .WhenSkipped(DependencyBehavior.Skip)
         .Executes(() =>
         {
             DocFXMetadata(s => s
@@ -117,7 +120,7 @@ class Build : NukeBuild
             DocFXBuild(s => s
                 .SetConfigFile(DocFxFile)
                 .SetLogLevel(DocFXLogLevel.Verbose)
-                .SetServe(InvokedTargets.Contains(nameof(BuildSite))));
+                .SetServe(InvokedTargets.Contains(BuildSite)));
         });
 
     Target Publish => _ => _
