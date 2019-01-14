@@ -63,6 +63,7 @@ class Build : NukeBuild
 
     Target DownloadPackages => _ => _
         .DependsOn(Clean)
+        .OnlyWhen(() => PublishApi)
         .Executes(() =>
         {
             var packages = Projects.Select(x => x.PackageId).Concat("System.ValueTuple");
@@ -78,6 +79,7 @@ class Build : NukeBuild
 
     Target Disclaimer => _ => _
         .DependsOn(DownloadPackages)
+        .OnlyWhen(() => PublishApi)
         .Executes(() =>
         {
             var disclaimerDirectory = SourceDirectory / "disclaimers";
@@ -91,6 +93,7 @@ class Build : NukeBuild
 
     Target Metadata => _ => _
         .DependsOn(DownloadPackages, CustomDocFx)
+        .OnlyWhen(() => PublishApi)
         .Executes(() =>
         {
             DocFXMetadata(s => s
