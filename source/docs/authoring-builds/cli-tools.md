@@ -172,4 +172,4 @@ The injected delegate has the [same signature]() as generated in CLI task classe
 Git($"checkout -b {Branch}", workingDirectory: checkoutDirectory);
 ```
 
-Whenever it is desirable to have the same fluent syntax available for a custom tool, there is a dedicated article about [code generation]() with further information.
+Whenever it is desirable to have the same fluent syntax available for a custom tool, there is a dedicated article about [code generation](../writing-addons/code-generation.md) with further information.
