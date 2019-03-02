@@ -153,12 +153,16 @@ MSBuild(o => o
     SetArgumentConfigurator
 -->
 
-## Unsupported Tools
+## Lightweight Integration
 
-Many of the most popular tools for .NET development are already implemented either in `Nuke.Common` or dedicated `Nuke.[Tool]` packages. In case that a certain tool is not yet supported with a proper CLI task class, NUKE allows to use **delegate injection** with one of the two attributes `PathExecutable` or `PackageExecutable`:
+Many of the most popular tools for .NET development are already implemented either in `Nuke.Common` or dedicated `Nuke.[Tool]` packages. In case that a certain tool is not yet supported with a proper CLI task class, NUKE allows to use the `ToolResolver` or one of the following **injection attributes**:
 
 ```c#
-[PathExecutable] readonly Tool Git;
+[PathExecutable]
+readonly Tool Git;
+
+[LocalExecutable("./tools/corflags.exe")]
+readonly Tool CorFlags;
 
 [PackageExecutable(
     packageId: "xunit.runner.console",
@@ -166,7 +170,7 @@ Many of the most popular tools for .NET development are already implemented eith
 readonly Tool Xunit;
 ```
 
-The injected delegate has the [same signature]() as generated in CLI task classes:
+The injected `Tool` delegate allows to pass arguments, working directory, environment variables and many more process-specific options:
 
 ```c#
 Git($"checkout -b {Branch}", workingDirectory: checkoutDirectory);

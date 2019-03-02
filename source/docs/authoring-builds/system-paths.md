@@ -23,4 +23,4 @@ class Build : NukeBuild
 
 For relative paths, the classes `RelativePath`, `WinRelativePath` and `UnixRelativePath` can be used. While `RelativePath` uses the directory separator used by the current operating system, `WinRelativePath` and `UnixRelativePath` will use `\` and `/` respectively.
 
-All path related classes will automatically normalize and reduce the paths they're pointing to. For instance, `/bin/../foo\bar` will return `/foo/bar`. Moreover, they provide an implicit conversion to `string`, which allows flexible use with other APIs.
+All path related classes will automatically normalize and reduce the paths they're pointing to. For instance, `/bin/../foo\.\bar` will return `/foo/bar`. Moreover, they provide an implicit conversion to `string`, which allows flexible use with other APIs.
