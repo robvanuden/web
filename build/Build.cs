@@ -46,7 +46,7 @@ class Build : NukeBuild
     string DocFxFile => RootDirectory / "docfx.json";
     AbsolutePath SiteDirectory => OutputDirectory / "site";
 
-    [Solution("nuke-web.sln")] readonly Solution Solution;
+    [Solution] readonly Solution Solution;
 
     IEnumerable<ApiProject> Projects => YamlDeserializeFromFile<List<ApiProject>>(RootDirectory / "projects.yml")
                                         ?? new List<ApiProject>();
@@ -54,7 +54,7 @@ class Build : NukeBuild
     Target Clean => _ => _
         .Executes(() =>
         {
-            DeleteDirectories(GlobDirectories(SourceDirectory, "*/bin", "*/obj"));
+            SourceDirectory.GlobDirectories("*/bin", "*/obj").ForEach(DeleteDirectory);
             DeleteDirectory(Solution.Directory / "obj");
             EnsureCleanDirectory(ApiDirectory);
             EnsureCleanDirectory(GenerationDirectory);
