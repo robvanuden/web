@@ -42,7 +42,7 @@ class Build : NukeBuild
 
     AbsolutePath GenerationDirectory => TemporaryDirectory / "packages";
     AbsolutePath ApiDirectory => SourceDirectory / "api";
-    
+
     string DocFxFile => RootDirectory / "docfx.json";
     AbsolutePath SiteDirectory => OutputDirectory / "site";
 
@@ -50,11 +50,12 @@ class Build : NukeBuild
 
     IEnumerable<ApiProject> Projects => YamlDeserializeFromFile<List<ApiProject>>(RootDirectory / "projects.yml")
                                         ?? new List<ApiProject>();
-    
+
     Target Clean => _ => _
         .Executes(() =>
         {
-            SourceDirectory.GlobDirectories("*/bin", "*/obj").ForEach(DeleteDirectory);
+            // SourceDirectory.GlobDirectories("*/bin", "*/obj").ForEach(DeleteDirectory);
+            DeleteDirectories(GlobDirectories(SourceDirectory, "*/obj", "*/bin"));
             DeleteDirectory(Solution.Directory / "obj");
             EnsureCleanDirectory(ApiDirectory);
             EnsureCleanDirectory(GenerationDirectory);
@@ -129,14 +130,14 @@ class Build : NukeBuild
         .Executes(() =>
         {
             FtpCredentials = new NetworkCredential(FtpUsername, FtpPassword);
-            
+
             if (PublishDocs)
                 FtpUploadDirectoryRecursively(SiteDirectory / "docs", FtpServer + "/docs");
             if (PublishImages)
                 FtpUploadDirectoryRecursively(SiteDirectory / "images", FtpServer + "/images");
             if (PublishApi)
                 FtpUploadDirectoryRecursively(SiteDirectory / "api", FtpServer + "/api");
-            
+
 
             return;
             var client = new FtpClient(FtpServer, new NetworkCredential(FtpUsername, FtpPassword));
