@@ -43,7 +43,7 @@ Firstly, we acknowledge that it looks funky, but at the same time we don't consi
 
 ### How can I debug my build?
 
-Yes. Build implementations reside in simple console applications. So setting the build project as the startup project will immediately allow to debug. Also using `Debugger.Launch` works, if you prefer to start the build from a shell. The best experience can be achieved by using one of the IDE extensions.
+Build implementations reside in simple console applications. So setting the build project as the startup project will immediately allow to debug. Also using `Debugger.Launch` works, if you prefer to start the build from a shell. The best experience can be achieved by using one of the IDE extensions.
 
 ### How can I execute tools from PATH?
 
